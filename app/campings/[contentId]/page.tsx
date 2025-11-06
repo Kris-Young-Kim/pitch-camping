@@ -27,6 +27,8 @@ import { DetailGallery } from "@/components/camping-detail/detail-gallery";
 import { ShareButton } from "@/components/camping-detail/share-button";
 import { BookmarkButton } from "@/components/camping-detail/bookmark-button";
 import { ReviewSection } from "@/components/camping-detail/review-section";
+import { ReservationButton } from "@/components/camping-detail/reservation-button";
+import { SafetyRecommendations } from "@/components/safety/safety-recommendations";
 import { trackView } from "@/lib/api/analytics";
 import type { CampingSiteDetail } from "@/types/camping";
 import type { Metadata } from "next";
@@ -171,6 +173,11 @@ export default async function CampingDetailPage({
           {/* 이미지 갤러리 */}
           <DetailGallery camping={detail} />
 
+          {/* 예약 버튼 (눈에 띄는 위치) */}
+          <div className="mt-6 mb-6">
+            <ReservationButton camping={detail} />
+          </div>
+
           <div className="space-y-4 mt-6">
             {detail.addr1 && (
               <div>
@@ -239,6 +246,9 @@ export default async function CampingDetailPage({
 
         {/* 리뷰 섹션 */}
         <ReviewSection contentId={contentId} />
+
+        {/* 안전 수칙 추천 */}
+        <SafetyRecommendations campingType={detail.induty} />
       </div>
     </main>
   );
