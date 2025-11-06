@@ -33,6 +33,7 @@ Phase 1은 Pitch Travel 서비스의 기반 인프라와 공통 모듈을 구축
 - Supabase 연결 정보 설정
 
 **확인 사항**:
+
 - TOUR_API_KEY (또는 NEXT_PUBLIC_TOUR_API_KEY)
 - NEXT_PUBLIC_NAVER_MAP_CLIENT_ID
 - NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
@@ -46,6 +47,7 @@ Phase 1은 Pitch Travel 서비스의 기반 인프라와 공통 모듈을 구축
 **파일**: `types/travel.ts`
 
 필수 타입:
+
 - `TravelSite`: 여행지 목록 항목
 - `TravelSiteDetail`: 여행지 상세 정보
 - `TravelFilter`: 필터 옵션
@@ -58,6 +60,7 @@ Phase 1은 Pitch Travel 서비스의 기반 인프라와 공통 모듈을 구축
 **파일**: `lib/api/travel-api.ts`
 
 **TravelApiClient 클래스**:
+
 - `constructor()`: API 키 및 Base URL 초기화
 - `getTravelList(filter)`: 여행지 목록 조회
 - `getTravelDetail(contentId)`: 여행지 상세 정보 조회
@@ -66,6 +69,7 @@ Phase 1은 Pitch Travel 서비스의 기반 인프라와 공통 모듈을 구축
 - `normalizeItems<T>(items)`: 응답 데이터 정규화 (단일/배열 처리)
 
 **에러 처리**:
+
 - API 응답 코드 검증
 - 타임아웃 처리 (10초)
 - 네트워크 오류 처리
@@ -75,6 +79,7 @@ Phase 1은 Pitch Travel 서비스의 기반 인프라와 공통 모듈을 구축
 **파일**: `constants/travel.ts`
 
 정의 항목:
+
 - `TRAVEL_TYPES`: 여행지 타입 (관광지, 문화시설, 축제, 숙박, 쇼핑, 음식점)
 - `REGIONS`: 지역 (시/도)
 - `CATEGORIES`: 카테고리 코드
@@ -86,6 +91,7 @@ Phase 1은 Pitch Travel 서비스의 기반 인프라와 공통 모듈을 구축
 **파일**: `lib/utils/travel.ts`
 
 함수 목록:
+
 - `normalizeTravelItems(items)`: 여행지 데이터 정규화 (단일/배열 처리)
 - `formatPhoneNumber(tel)`: 전화번호 포맷팅
 - `formatAddress(addr1, addr2)`: 주소 결합
@@ -99,6 +105,7 @@ Phase 1은 Pitch Travel 서비스의 기반 인프라와 공통 모듈을 구축
 **파일**: `supabase/migrations/tourapi_schema.sql`
 
 **users 테이블**:
+
 - id (UUID, PK)
 - clerk_id (TEXT, UNIQUE)
 - name (TEXT)
@@ -106,6 +113,7 @@ Phase 1은 Pitch Travel 서비스의 기반 인프라와 공통 모듈을 구축
 - RLS 비활성화 (개발 환경)
 
 **bookmarks 테이블**:
+
 - id (UUID, PK)
 - user_id (UUID, FK → users.id)
 - content_id (TEXT)
@@ -119,6 +127,7 @@ Phase 1은 Pitch Travel 서비스의 기반 인프라와 공통 모듈을 구축
 **파일**: `app/layout.tsx`
 
 설정 항목:
+
 - 기본 메타데이터 (title, description, keywords)
 - Open Graph 메타데이터
 - Twitter 카드 메타데이터
@@ -149,4 +158,3 @@ Phase 1은 Pitch Travel 서비스의 기반 인프라와 공통 모듈을 구축
 ## 다음 단계
 
 Phase 2로 진행하여 실제 기능 구현 시작.
-
