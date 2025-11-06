@@ -11,7 +11,7 @@
 
 import { MetadataRoute } from "next";
 import { campingApi } from "@/lib/api/camping-api";
-import { CampingApiClient } from "@/lib/api/camping-api";
+import { normalizeItems } from "@/lib/utils/camping";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://pitch-camping.vercel.app";
@@ -23,7 +23,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       numOfRows: 1000,
     });
 
-    const items = CampingApiClient.normalizeItems(
+    const items = normalizeItems(
       response.response?.body?.items?.item
     );
 

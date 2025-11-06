@@ -11,6 +11,19 @@
 import type { CampingSite } from "@/types/camping";
 
 /**
+ * API 응답 데이터를 배열로 정규화
+ * 단일 항목 또는 배열을 배열로 변환
+ * @param items 단일 항목, 배열, 또는 undefined
+ * @returns 항상 배열 반환
+ */
+export function normalizeItems<T>(items: T | T[] | undefined): T[] {
+  if (!items) {
+    return [];
+  }
+  return Array.isArray(items) ? items : [items];
+}
+
+/**
  * KATEC 좌표계를 WGS84 좌표계로 변환
  * 고캠핑 API는 KATEC 좌표계를 사용하며, 정수형으로 저장됨 (실제값 * 10000000)
  *

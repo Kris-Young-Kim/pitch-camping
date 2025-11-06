@@ -21,7 +21,8 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { campingApi, CampingApiClient } from "@/lib/api/camping-api";
+import { campingApi } from "@/lib/api/camping-api";
+import { normalizeItems } from "@/lib/utils/camping";
 import { DetailGallery } from "@/components/camping-detail/detail-gallery";
 import { ShareButton } from "@/components/camping-detail/share-button";
 import { BookmarkButton } from "@/components/camping-detail/bookmark-button";
@@ -45,7 +46,7 @@ export async function generateMetadata({
   try {
     console.log("[CampingDetailPage] 메타데이터 생성 시작:", contentId);
     const response = await campingApi.getCampingDetail(contentId);
-    const detail = CampingApiClient.normalizeItems(
+    const detail = normalizeItems(
       response.response?.body?.items?.item
     )[0];
 
@@ -113,7 +114,7 @@ export default async function CampingDetailPage({
     const response = await campingApi.getCampingDetail(contentId);
     console.log("[CampingDetailPage] API 응답:", response);
 
-    const items = CampingApiClient.normalizeItems(
+    const items = normalizeItems(
       response.response?.body?.items?.item
     );
 

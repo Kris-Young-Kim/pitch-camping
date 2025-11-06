@@ -27,7 +27,7 @@ import { CardSkeleton } from "@/components/loading/card-skeleton";
 import { Button } from "@/components/ui/button";
 import { AlertCircle, RefreshCw } from "lucide-react";
 import type { CampingSite, CampingFilter } from "@/types/camping";
-import { CampingApiClient } from "@/lib/api/camping-api";
+import { normalizeItems } from "@/lib/utils/camping";
 import { PAGINATION_DEFAULTS } from "@/constants/camping";
 
 interface CampingListProps {
@@ -85,7 +85,7 @@ export function CampingList({ filter, onCampingClick, onCampingsChange }: Campin
         console.log("[CampingList] API 응답:", data);
 
         // 응답 데이터 정규화
-        const items = CampingApiClient.normalizeItems(
+        const items = normalizeItems(
           data.response?.body?.items?.item
         );
 

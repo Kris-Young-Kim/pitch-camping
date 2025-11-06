@@ -4,7 +4,8 @@ const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
       { hostname: "img.clerk.com" },
-      // 고캠핑 API 이미지 도메인 (실제 도메인에 맞게 수정 필요)
+      // 고캠핑 API 이미지 도메인
+      { hostname: "gocamping.or.kr" },
       { hostname: "**.go.kr" },
       { hostname: "**.data.go.kr" },
     ],
