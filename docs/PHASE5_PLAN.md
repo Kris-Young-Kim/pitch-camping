@@ -11,7 +11,31 @@ Phase 5는 프로덕션 배포 준비, 핵심 기능 검증, 운영 모니터링
 - 핵심 지표 측정 및 모니터링 시스템 구축
 - 고객 피드백 수집 체계 구축
 - 투자/사업자 대상 데모 자료 준비
-- 파트너십 및 협력 구조 논의
+- 여행 관련 파트너십 및 협력 구조 논의
+
+## 현재 상태
+
+### ✅ 완료된 작업
+
+- Vercel 배포 설정 및 CI/CD 파이프라인 구축
+- 배포 체크리스트 문서 작성
+- MVP 기능 검증 체크리스트 작성
+- 메트릭 측정 시스템 구축
+- 관리자 분석 페이지 생성
+- 피드백 수집 체계 구축 (테이블, 폼, 페이지)
+
+### ⏳ 미완료 작업
+
+1. **메트릭 추적 통합**
+   - share-button, bookmark-button, travel-api.ts에 메트릭 추적 추가
+
+2. **투자/사업자 대상 데모 랜딩페이지**
+   - 서비스 소개 및 데모 페이지 생성
+   - 비즈니스 모델 및 피칭 자료 업데이트
+
+3. **여행 관련 파트너십 계획 수립**
+   - 한국관광공사, 지역 관광청 등 파트너십 계획
+   - 협력 구조 논의
 
 ## 작업 항목
 
@@ -27,7 +51,7 @@ Phase 5는 프로덕션 배포 준비, 핵심 기능 검증, 운영 모니터링
 - 환경 변수 설정 (.env.production 참고)
   - Clerk 키 (NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY, CLERK_SECRET_KEY)
   - Supabase 키 (NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY)
-  - 고캠핑 API 키 (NEXT_PUBLIC_GOCAMPING_API_KEY, GOCAMPING_API_KEY)
+  - TourAPI 키 (TOUR_API_KEY, NEXT_PUBLIC_TOUR_API_KEY)
   - 네이버 지도 API 키 (NEXT_PUBLIC_NAVER_MAP_CLIENT_ID)
   - 관리자 사용자 ID (ADMIN_USER_IDS)
   - 사이트 URL (NEXT_PUBLIC_SITE_URL)
@@ -40,12 +64,12 @@ Phase 5는 프로덕션 배포 준비, 핵심 기능 검증, 운영 모니터링
 - NEXT_PUBLIC_SUPABASE_URL
 - NEXT_PUBLIC_SUPABASE_ANON_KEY
 - SUPABASE_SERVICE_ROLE_KEY
-- NEXT_PUBLIC_GOCAMPING_API_KEY (또는 GOCAMPING_API_KEY)
+- TOUR_API_KEY (또는 NEXT_PUBLIC_TOUR_API_KEY)
 - NEXT_PUBLIC_NAVER_MAP_CLIENT_ID
 - ADMIN_USER_IDS (쉼표로 구분된 Clerk 사용자 ID)
 
 선택적 환경 변수:
-- NEXT_PUBLIC_SITE_URL (프로덕션 도메인)
+- NEXT_PUBLIC_SITE_URL (프로덕션 도메인, 기본값: https://pitch-travel.vercel.app)
 ```
 
 **파일**: 
@@ -129,14 +153,14 @@ jobs:
 **체크리스트 문서**: `docs/DEPLOYMENT_CHECKLIST.md` 생성
 
 **주요 확인 사항**:
-- [ ] 모든 환경 변수 설정 확인
-- [ ] 빌드 성공 확인
-- [ ] 프로덕션 URL 접근 확인
-- [ ] Clerk 인증 동작 확인
-- [ ] Supabase 연결 확인
-- [ ] 고캠핑 API 호출 확인
-- [ ] 네이버 지도 로드 확인
-- [ ] 관리자 대시보드 접근 확인
+- [x] 모든 환경 변수 설정 확인
+- [x] 빌드 성공 확인
+- [x] 프로덕션 URL 접근 확인
+- [x] Clerk 인증 동작 확인
+- [x] Supabase 연결 확인
+- [x] TourAPI 호출 확인
+- [x] 네이버 지도 로드 확인
+- [x] 관리자 대시보드 접근 확인
 
 ### 2. 핵심 기능 검증 체크리스트 작성
 
@@ -145,7 +169,7 @@ jobs:
 **목표**: 서비스 정상 작동 확인
 
 **MVP 기능 목록** (PRD 기준):
-1. 캠핑장 목록 + 지역/타입 필터
+1. 여행지 목록 + 지역/타입 필터
 2. 네이버 지도 연동
 3. 키워드 검색
 4. 상세페이지
@@ -157,42 +181,42 @@ jobs:
 - 반응형 테스트 (모바일/태블릿/데스크톱)
 - 브라우저 호환성 테스트 (Chrome, Safari, Firefox, Edge)
 
-**파일**: `docs/MVP_FEATURE_CHECKLIST.md` 생성
+**파일**: `docs/MVP_FEATURE_CHECKLIST.md` (이미 작성됨, 여행지 기준으로 업데이트 필요)
 
 **검증 항목 예시**:
 
-**1. 캠핑장 목록 + 필터**:
-- [ ] 지역 필터 선택 시 목록 업데이트
-- [ ] 캠핑 타입 필터 동작
-- [ ] 시설 필터 다중 선택
-- [ ] 정렬 옵션 변경
-- [ ] 페이지네이션 동작
-- [ ] 로딩 상태 표시
-- [ ] 빈 결과 처리
-- [ ] 에러 처리
+**1. 여행지 목록 + 필터**:
+- [x] 지역 필터 선택 시 목록 업데이트
+- [x] 여행지 타입 필터 동작 (관광지, 문화시설, 축제, 숙박 등)
+- [x] 정렬 옵션 변경
+- [x] 페이지네이션 동작
+- [x] 로딩 상태 표시
+- [x] 빈 결과 처리
+- [x] 에러 처리
 
 **2. 네이버 지도 연동**:
-- [ ] 지도 로드 성공
-- [ ] 마커 정확히 표시
-- [ ] 마커 클릭 시 인포윈도우 표시
-- [ ] 리스트-지도 상호연동 (카드 클릭 시 지도 이동)
-- [ ] 선택된 캠핑장 하이라이트
-- [ ] 모바일/데스크톱 반응형 레이아웃
+- [x] 지도 로드 성공
+- [x] 마커 정확히 표시
+- [x] 마커 클릭 시 인포윈도우 표시
+- [x] 리스트-지도 상호연동 (카드 클릭 시 지도 이동)
+- [x] 선택된 여행지 하이라이트
+- [x] 모바일/데스크톱 반응형 레이아웃
+- [x] 지도 내 검색/필터 오버레이
 
 **3. 키워드 검색**:
-- [ ] 검색어 입력 및 실행
-- [ ] 검색 결과 표시
-- [ ] 빈 검색 결과 처리
-- [ ] 검색어 초기화
-- [ ] 검색 + 필터 조합
+- [x] 검색어 입력 및 실행
+- [x] 검색 결과 표시
+- [x] 빈 검색 결과 처리
+- [x] 검색어 초기화
+- [x] 검색 + 필터 조합
 
 **4. 상세페이지**:
-- [ ] 기본 정보 표시
-- [ ] 이미지 갤러리 동작
-- [ ] 공유 기능 (URL 복사)
-- [ ] 북마크 기능
-- [ ] 리뷰 섹션 표시
-- [ ] 조회수 추적 확인
+- [x] 기본 정보 표시
+- [x] 이미지 갤러리 동작
+- [x] 공유 기능 (URL 복사)
+- [x] 북마크 기능
+- [x] 조회수 추적 확인
+- [ ] 리뷰 섹션 표시 (구현됨, 통합 필요)
 
 ### 2.2 반응형 테스트
 
@@ -220,18 +244,22 @@ jobs:
 **측정 항목**:
 - 즐겨찾기(북마크) 성공률
 - URL 복사 성공률
-- API 응답 성공률 (고캠핑 API)
+- API 응답 성공률 (TourAPI)
 - 데이터 정확도 (API 응답 데이터 vs 표시 데이터)
 
 **작업 내용**:
-- 측정 대시보드 생성 (`app/admin/analytics/page.tsx`)
-- 로깅 시스템 활용 (`lib/utils/logger.ts`)
-- 성능 모니터링 연동 (`lib/utils/performance.ts`)
+- 측정 대시보드 생성 (`app/admin/analytics/page.tsx`) ✅ 완료
+- 로깅 시스템 활용 (`lib/utils/logger.ts`) ✅ 완료
+- 성능 모니터링 연동 (`lib/utils/performance.ts`) ✅ 완료
+- 메트릭 추적 통합 (share-button, bookmark-button, travel-api.ts) ⏳ 진행 중
 - 에러 추적 시스템 도입 (Sentry 등, 선택 사항)
 
 **파일**: 
-- `app/admin/analytics/page.tsx` (관리자 분석 페이지)
-- `lib/utils/metrics.ts` (측정 유틸리티)
+- `app/admin/analytics/page.tsx` (관리자 분석 페이지) ✅ 완료
+- `lib/utils/metrics.ts` (측정 유틸리티) ✅ 완료
+- `components/travel-detail/share-button.tsx` (메트릭 추적 통합 필요)
+- `components/travel-detail/bookmark-button.tsx` (메트릭 추적 통합 필요)
+- `lib/api/travel-api.ts` (메트릭 추적 통합 필요)
 
 **측정 지표 예시**:
 ```typescript
@@ -268,6 +296,7 @@ interface ServiceMetrics {
 - API 응답 데이터와 화면 표시 데이터 일치 확인
 - 데이터베이스 저장 데이터 정확성 확인
 - 북마크 데이터 동기화 확인 (Clerk ↔ Supabase)
+- TourAPI 데이터 정확도 검증 (contentid, 좌표, 이미지 URL 등)
 
 ## 4. CS/고객 피드백 수집 체계 구축
 
@@ -276,16 +305,16 @@ interface ServiceMetrics {
 **목표**: 사용자 피드백 체계적 수집
 
 **작업 내용**:
-- 피드백 페이지/컴포넌트 생성 (`components/feedback-form.tsx`, `app/feedback/page.tsx`)
-- Supabase에 피드백 저장 테이블 생성
+- 피드백 페이지/컴포넌트 생성 (`components/feedback-form.tsx`, `app/feedback/page.tsx`) ✅ 완료
+- Supabase에 피드백 저장 테이블 생성 ✅ 완료
 - 이메일 연동 (선택 사항)
 - 지원 채널 안내 (이메일, 전화 등)
 
 **파일**:
-- `supabase/migrations/YYYYMMDDHHmmss_create_feedback_table.sql`
-- `components/feedback-form.tsx`
-- `app/feedback/page.tsx`
-- `actions/submit-feedback.ts` (Server Action)
+- `supabase/migrations/20251106150000_create_feedback_table.sql` ✅ 완료
+- `components/feedback-form.tsx` ✅ 완료
+- `app/feedback/page.tsx` ✅ 완료
+- `actions/submit-feedback.ts` (Server Action) ✅ 완료
 
 **피드백 테이블 스키마**:
 ```sql
@@ -336,15 +365,17 @@ CREATE TABLE feedback (
 - CTA (Call to Action) 버튼
 
 **파일**: 
-- `app/demo/page.tsx` 또는 `app/page.tsx` 개선
+- `app/demo/page.tsx` (새로 생성)
 - `components/demo/showcase.tsx` (기능 데모 컴포넌트)
+- `components/demo/stats-section.tsx` (통계 섹션)
 
 **랜딩페이지 구성 요소**:
 - 히어로 섹션 (서비스 소개, 메인 CTA)
-- 주요 기능 소개 (MVP 4개 기능)
-- 사용 통계 (사용자 수, 캠핑장 수 등)
+- 주요 기능 소개 (MVP 4개 기능: 여행지 목록, 지도, 검색, 상세페이지)
+- 사용 통계 (사용자 수, 여행지 수, 조회 수 등)
 - 데모 동영상 또는 스크린샷
 - 연락처/문의 섹션
+- 투자자/파트너 대상 정보
 
 ### 5.2 데모 자료 준비
 
@@ -377,11 +408,12 @@ CREATE TABLE feedback (
 **목표**: 사업 확장을 위한 협력 구조 연구
 
 **작업 내용**:
-- 국내 캠핑 관련 기관/단체 조사
-  - 한국관광공사
-  - 각 지역 관광청
-  - 캠핑 관련 협회
-  - 캠핑장 운영사
+- 여행 관련 기관/단체 조사
+  - 한국관광공사 (TourAPI 제공자, 데이터 파트너십 가능)
+  - 각 지역 관광청 (지역별 여행 정보 협력)
+  - 여행사 및 관광 관련 협회
+  - 숙박 예약 플랫폼 (예약 시스템 연동)
+  - 여행 콘텐츠 크리에이터 (마케팅 협력)
 - 파트너십 가능성 검토
 - 마케팅 협력 방안 수립
 - 파트너십 제안서 초안 작성 (`docs/PARTNERSHIP_PROPOSAL.md`)
@@ -389,10 +421,10 @@ CREATE TABLE feedback (
 **파일**: `docs/PARTNERSHIP_PLAN.md` 생성
 
 **파트너십 유형**:
-- 데이터 파트너십: 캠핑장 정보 공유
-- 마케팅 파트너십: 공동 프로모션
-- 기술 파트너십: API 연동
-- 비즈니스 파트너십: 예약 시스템 연동
+- 데이터 파트너십: 여행지 정보 공유, TourAPI 활용 협력
+- 마케팅 파트너십: 공동 프로모션, 콘텐츠 마케팅
+- 기술 파트너십: API 연동, 예약 시스템 연동
+- 비즈니스 파트너십: 예약 시스템 연동, 수수료 모델
 
 ### 6.2 협력 구조 논의
 
@@ -404,43 +436,70 @@ CREATE TABLE feedback (
 
 ## 구현 순서
 
-1. **Week 1**: 배포 환경 구축
-   - Vercel 프로젝트 설정
-   - 환경 변수 구성
-   - CI/CD 파이프라인 구축
-   - 배포 체크리스트 작성
+### Week 1: 메트릭 추적 통합 (진행 중)
 
-2. **Week 2**: 기능 검증
-   - MVP 기능 검증 체크리스트 작성
-   - 기능별 테스트 실행
-   - 반응형 및 브라우저 호환성 테스트
+**작업 내용**:
+- `components/travel-detail/share-button.tsx`: URL 복사 성공/실패 추적 추가
+- `components/travel-detail/bookmark-button.tsx`: 북마크 성공/실패 추적 추가
+- `lib/api/travel-api.ts`: API 요청 성공/실패 및 응답 시간 추적 추가
+- 메트릭 데이터 수집 확인 및 관리자 분석 페이지 연동
 
-3. **Week 3**: 측정 및 모니터링
-   - 측정 시스템 구축
-   - 관리자 분석 페이지 생성
-   - 성능 모니터링 강화
+**완료 기준**:
+- [ ] share-button에서 URL 복사 시도/성공/실패 추적
+- [ ] bookmark-button에서 북마크 추가/삭제 시도/성공/실패 추적
+- [ ] travel-api.ts에서 모든 API 요청 성공/실패 및 응답 시간 추적
+- [ ] 관리자 분석 페이지에서 실시간 메트릭 확인 가능
 
-4. **Week 4**: 피드백 수집
-   - 피드백 테이블 생성
-   - 피드백 폼 및 페이지 생성
-   - 피드백 관리 프로세스 수립
+### Week 2: 데모 랜딩페이지 생성
 
-5. **Week 5**: 데모 및 사업 자료
-   - 데모 랜딩페이지 생성
-   - 비즈니스 모델 문서 작성
-   - 피칭 자료 작성
-   - 파트너십 계획 수립
+**작업 내용**:
+- `app/demo/page.tsx` 생성
+- 서비스 소개 및 주요 기능 데모
+- 통계 섹션 (실제 데이터 연동)
+- CTA 버튼 및 연락처 정보
+
+**완료 기준**:
+- [ ] 데모 페이지 접근 가능
+- [ ] 주요 기능 소개 섹션 완성
+- [ ] 통계 데이터 표시
+- [ ] 연락처/문의 섹션 완성
+
+### Week 3: 비즈니스 자료 업데이트
+
+**작업 내용**:
+- `docs/BUSINESS_MODEL.md` 업데이트 (여행 서비스 기준)
+- `docs/PITCH_DECK.md` 업데이트 (여행 서비스 기준)
+- `docs/FINANCIAL_MODEL.md` 업데이트 (여행 서비스 기준)
+
+**완료 기준**:
+- [ ] 비즈니스 모델 문서가 여행 서비스에 맞게 업데이트됨
+- [ ] 피칭 자료가 여행 서비스에 맞게 업데이트됨
+- [ ] 재무 모델이 여행 서비스에 맞게 업데이트됨
+
+### Week 4: 파트너십 계획 수립
+
+**작업 내용**:
+- `docs/PARTNERSHIP_PLAN.md` 생성
+- 여행 관련 파트너 조사
+- 파트너십 제안서 초안 작성
+- 협력 구조 논의
+
+**완료 기준**:
+- [ ] 파트너십 계획 문서 작성 완료
+- [ ] 잠재 파트너 리스트 작성
+- [ ] 파트너십 제안서 초안 작성
 
 ## 완료 기준
 
-- [ ] Vercel 프로덕션 배포 완료
-- [ ] CI/CD 파이프라인 정상 작동
-- [ ] MVP 4개 기능 검증 완료
-- [ ] 핵심 지표 측정 시스템 구축
-- [ ] 피드백 수집 채널 구축
+- [x] Vercel 프로덕션 배포 완료
+- [x] CI/CD 파이프라인 정상 작동
+- [x] MVP 4개 기능 검증 완료 (여행지 기준)
+- [x] 핵심 지표 측정 시스템 구축
+- [x] 피드백 수집 채널 구축
+- [ ] 메트릭 추적 통합 완료 (share-button, bookmark-button, travel-api.ts)
 - [ ] 데모 페이지 준비 완료
-- [ ] 비즈니스 모델 및 피칭 자료 작성
-- [ ] 파트너십 계획 초안 작성
+- [ ] 비즈니스 모델 및 피칭 자료 업데이트 (여행 서비스 기준)
+- [ ] 파트너십 계획 초안 작성 (여행 관련 파트너)
 
 ## 참고 자료
 
