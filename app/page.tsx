@@ -2,74 +2,118 @@
  * @file page.tsx
  * @description Pitch Camping 홈페이지
  *
- * 캠핑장 정보 서비스의 메인 랜딩 페이지
- * Phase 2에서 캠핑장 목록 기능으로 대체될 예정
+ * 캠핑장 목록, 필터, 검색 기능을 통합한 메인 페이지
+ *
+ * 주요 기능:
+ * 1. 필터 컴포넌트 (지역, 타입, 시설, 정렬)
+ * 2. 캠핑장 목록 표시
+ * 3. URL 쿼리 파라미터 기반 필터 상태 관리
+ *
+ * @dependencies
+ * - components/camping-filters.tsx: CampingFilters 컴포넌트
+ * - components/camping-list.tsx: CampingList 컴포넌트
+ * - types/camping.ts: CampingFilter 타입
  */
 
-import { Button } from "@/components/ui/button";
-import { MapPin, Search, Star, Tent } from "lucide-react";
+"use client";
+
+import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
+import { CampingFilters } from "@/components/camping-filters";
+import { CampingList } from "@/components/camping-list";
+import { CampingSearch } from "@/components/camping-search";
+import type { CampingFilter } from "@/types/camping";
+import {
+  REGIONS,
+  CAMPING_TYPES,
+  SORT_OPTIONS,
+} from "@/constants/camping";
 
 export default function Home() {
-  console.log("[Home] 홈페이지 렌더링");
+  const searchParams = useSearchParams();
+  const [filter, setFilter] = useState<CampingFilter>({});
+
+  // URL 쿼리 파라미터로부터 필터 초기화
+  useEffect(() => {
+    console.group("[Home] 필터 초기화");
+    const region = searchParams.get("region");
+    const type = searchParams.get("type");
+    const facilities = searchParams.get("facilities");
+    const keyword = searchParams.get("keyword");
+    const sort = searchParams.get("sort");
+
+    const initialFilter: CampingFilter = {};
+
+    if (region && region !== REGIONS.ALL) {
+      initialFilter.doNm = region;
+    }
+
+    if (type && type !== CAMPING_TYPES.ALL) {
+      initialFilter.induty = type;
+    }
+
+    if (facilities) {
+      initialFilter.sbrsCl = facilities;
+    }
+
+    if (keyword) {
+      initialFilter.keyword = keyword;
+    }
+
+    if (sort) {
+      initialFilter.sortOrder = sort as CampingFilter["sortOrder"];
+    }
+
+    console.log("초기 필터:", initialFilter);
+    setFilter(initialFilter);
+    console.groupEnd();
+  }, [searchParams]);
+
+  const handleFilterChange = (newFilter: CampingFilter) => {
+    console.log("[Home] 필터 변경 콜백:", newFilter);
+    setFilter(newFilter);
+  };
 
   return (
-    <main className="min-h-[calc(100vh-80px)] flex flex-col">
-      {/* Hero Section */}
-      <section className="flex-1 flex items-center justify-center px-4 py-16 lg:py-24 bg-gradient-to-b from-green-50 to-white dark:from-green-950/20 dark:to-gray-900">
-        <div className="w-full max-w-6xl mx-auto text-center">
-          <div className="flex justify-center mb-6">
-            <Tent className="w-16 h-16 text-green-600 dark:text-green-400" />
-          </div>
-          <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 text-gray-900 dark:text-white">
+    <main className="min-h-[calc(100vh-80px)] py-8 px-4">
+      <div className="max-w-7xl mx-auto">
+        {/* 헤더 */}
+        <div className="mb-8">
+          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
             Pitch Camping
           </h1>
-          <p className="text-xl md:text-2xl text-gray-600 dark:text-gray-400 mb-12 max-w-2xl mx-auto">
-            전국의 아름다운 캠핑장을 탐험하세요
-            <br />
-            검색하고, 지도에서 확인하고, 상세 정보를 조회하세요
+          <p className="text-gray-600 dark:text-gray-400 mb-6">
+            전국의 캠핑장을 검색하고 확인하세요
           </p>
-
-          {/* 기능 소개 카드 */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-16">
-            <div className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-shadow">
-              <div className="flex justify-center mb-4">
-                <Search className="w-8 h-8 text-green-600 dark:text-green-400" />
-              </div>
-              <h3 className="text-lg font-semibold mb-2">캠핑장 검색</h3>
-              <p className="text-gray-600 dark:text-gray-400 text-sm">
-                지역, 타입, 시설로 원하는 캠핑장을 찾아보세요
-              </p>
-            </div>
-
-            <div className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-shadow">
-              <div className="flex justify-center mb-4">
-                <MapPin className="w-8 h-8 text-green-600 dark:text-green-400" />
-              </div>
-              <h3 className="text-lg font-semibold mb-2">지도로 확인</h3>
-              <p className="text-gray-600 dark:text-gray-400 text-sm">
-                네이버 지도에서 캠핑장 위치를 한눈에 확인하세요
-              </p>
-            </div>
-
-            <div className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-shadow">
-              <div className="flex justify-center mb-4">
-                <Star className="w-8 h-8 text-green-600 dark:text-green-400" />
-              </div>
-              <h3 className="text-lg font-semibold mb-2">상세 정보</h3>
-              <p className="text-gray-600 dark:text-gray-400 text-sm">
-                운영시간, 시설, 이미지 등 종합 정보를 확인하세요
-              </p>
-            </div>
-          </div>
-
-          {/* 개발 중 안내 */}
-          <div className="mt-16 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
-            <p className="text-blue-800 dark:text-blue-300 text-sm">
-              🚧 현재 개발 중입니다. 곧 캠핑장 목록 기능이 추가될 예정입니다.
-            </p>
+          
+          {/* 검색창 */}
+          <div className="max-w-2xl">
+            <CampingSearch
+              onSearch={(keyword) => {
+                console.log("[Home] 검색 실행:", keyword);
+                setFilter((prev) => ({
+                  ...prev,
+                  keyword: keyword || undefined,
+                  pageNo: 1,
+                }));
+              }}
+            />
           </div>
         </div>
-      </section>
+
+        {/* 필터 및 목록 레이아웃 */}
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+          {/* 필터 사이드바 */}
+          <aside className="lg:col-span-1">
+            <CampingFilters onFilterChange={handleFilterChange} />
+          </aside>
+
+          {/* 목록 영역 */}
+          <div className="lg:col-span-3">
+            <CampingList filter={filter} />
+          </div>
+        </div>
+      </div>
     </main>
   );
 }
