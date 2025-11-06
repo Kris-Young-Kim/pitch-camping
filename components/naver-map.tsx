@@ -20,8 +20,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { MapPin, Navigation2 } from "lucide-react";
+import { MapSkeleton } from "@/components/loading/map-skeleton";
 import type { CampingSite } from "@/types/camping";
 import { convertKATECToWGS84 } from "@/lib/utils/camping";
 
@@ -286,27 +285,15 @@ export function NaverMap({
     }
   }, [campings]);
 
-  if (error) {
-    return (
-      <div className="flex items-center justify-center h-full bg-gray-100 dark:bg-gray-800 rounded-lg">
-        <div className="text-center">
-          <MapPin className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-          <p className="text-gray-600 dark:text-gray-400">{error}</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className={`relative w-full h-full min-h-[400px] md:min-h-[600px] ${className}`}>
-      <div ref={mapRef} className="w-full h-full rounded-lg" />
-      {!isLoaded && (
-        <div className="absolute inset-0 flex items-center justify-center bg-gray-100 dark:bg-gray-800 rounded-lg">
+    <div className={`relative w-full h-full min-h-[400px] md:min-h-[600px] ${className}`} role="application" aria-label="네이버 지도">
+      <div ref={mapRef} className="w-full h-full rounded-lg" aria-hidden={!isLoaded} />
+      {!isLoaded && <MapSkeleton />}
+      {error && (
+        <div className="absolute inset-0 flex items-center justify-center bg-gray-100 dark:bg-gray-800 rounded-lg" role="alert">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-2 border-green-600 border-t-transparent mx-auto mb-2"></div>
-            <p className="text-sm text-gray-600 dark:text-gray-400">
-              지도를 불러오는 중...
-            </p>
+            <MapPin className="w-12 h-12 text-gray-400 mx-auto mb-4" aria-hidden="true" />
+            <p className="text-gray-600 dark:text-gray-400">{error}</p>
           </div>
         </div>
       )}

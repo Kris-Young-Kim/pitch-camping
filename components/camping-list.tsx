@@ -23,7 +23,7 @@
 import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { CampingCard } from "@/components/camping-card";
-import { Skeleton } from "@/components/ui/skeleton";
+import { CardSkeleton } from "@/components/loading/card-skeleton";
 import { Button } from "@/components/ui/button";
 import { AlertCircle, RefreshCw } from "lucide-react";
 import type { CampingSite, CampingFilter } from "@/types/camping";
@@ -118,17 +118,13 @@ export function CampingList({ filter, onCampingClick, selectedCampingId, onCampi
   // 로딩 상태
   if (loading) {
     return (
-      <div className="space-y-4">
+      <div className="space-y-6" role="status" aria-label="캠핑장 목록 로딩 중">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="space-y-3">
-              <Skeleton className="h-48 w-full rounded-lg" />
-              <Skeleton className="h-4 w-3/4" />
-              <Skeleton className="h-4 w-1/2" />
-              <Skeleton className="h-4 w-full" />
-            </div>
+            <CardSkeleton key={i} />
           ))}
         </div>
+        <span className="sr-only">캠핑장 목록을 불러오는 중입니다...</span>
       </div>
     );
   }
@@ -168,36 +164,39 @@ export function CampingList({ filter, onCampingClick, selectedCampingId, onCampi
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" role="region" aria-label="캠핑장 목록">
       {/* 결과 개수 표시 */}
-      <div className="text-sm text-gray-600 dark:text-gray-400">
-        총 {totalCount.toLocaleString()}개의 캠핑장이 있습니다
+      <div className="text-sm text-gray-600 dark:text-gray-400" aria-live="polite">
+        총 <span className="font-semibold">{totalCount.toLocaleString()}</span>개의 캠핑장이 있습니다
       </div>
 
       {/* 캠핑장 그리드 */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" role="list">
         {campings.map((camping) => (
-          <CampingCard 
-            key={camping.contentId} 
-            camping={camping}
-            onCardClick={onCampingClick}
-          />
+          <div key={camping.contentId} role="listitem">
+            <CampingCard 
+              camping={camping}
+              onCardClick={onCampingClick}
+            />
+          </div>
         ))}
       </div>
 
       {/* 페이지네이션 */}
       {totalPages > 1 && (
-        <div className="flex items-center justify-center gap-2 pt-4">
+        <nav aria-label="페이지 네비게이션" className="flex items-center justify-center gap-2 pt-4">
           <Button
             variant="outline"
             size="sm"
             onClick={() => handlePageChange(page - 1)}
             disabled={page === 1}
+            aria-label="이전 페이지"
+            className="focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
           >
             이전
           </Button>
 
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1" role="list">
             {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
               let pageNum: number;
               if (totalPages <= 5) {
@@ -216,6 +215,9 @@ export function CampingList({ filter, onCampingClick, selectedCampingId, onCampi
                   variant={page === pageNum ? "default" : "outline"}
                   size="sm"
                   onClick={() => handlePageChange(pageNum)}
+                  aria-label={`${pageNum}페이지로 이동`}
+                  aria-current={page === pageNum ? "page" : undefined}
+                  className="focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
                 >
                   {pageNum}
                 </Button>
@@ -228,10 +230,12 @@ export function CampingList({ filter, onCampingClick, selectedCampingId, onCampi
             size="sm"
             onClick={() => handlePageChange(page + 1)}
             disabled={page === totalPages}
+            aria-label="다음 페이지"
+            className="focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
           >
             다음
           </Button>
-        </div>
+        </nav>
       )}
     </div>
   );

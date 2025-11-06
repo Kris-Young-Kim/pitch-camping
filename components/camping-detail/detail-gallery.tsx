@@ -94,6 +94,7 @@ export function DetailGallery({ camping }: DetailGalleryProps) {
           fill
           className="object-cover group-hover:scale-105 transition-transform duration-200"
           sizes="100vw"
+          priority // 상세페이지 첫 이미지는 priority 로드
           onClick={() => handleImageClick(0)}
         />
         {images.length > 1 && (

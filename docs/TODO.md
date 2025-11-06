@@ -191,12 +191,80 @@
 
 ## [Phase 4] UI/UX·접근성·최적화
 
-- [ ] 시각적 브랜딩·컬러스킴 다크/라이트 모드 완벽 지원
-- [ ] 이미지·지도·목록·에러·로딩 상태별 세밀한 Skeleton/스피너
-- [ ] ARIA, 키보드/스크린리더 지원 등 접근성 전수 검사
-- [ ] 페이지 404/오프라인 안내·재시도 UX
-- [ ] SEO: sitemap, robots.txt, 동적 메타태그 구성
-- [ ] Lighthouse 점수 80+ 달성, UX/성능 테스트
+- [x] 시각적 브랜딩·컬러스킴 다크/라이트 모드 완벽 지원
+- [x] 이미지·지도·목록·에러·로딩 상태별 세밀한 Skeleton/스피너
+- [x] ARIA, 키보드/스크린리더 지원 등 접근성 전수 검사
+- [x] 페이지 404/오프라인 안내·재시도 UX
+- [x] SEO: sitemap, robots.txt, 동적 메타태그 구성
+- [x] Lighthouse 점수 80+ 달성 준비 완료 (코드 레벨 최적화 완료, 실제 측정 필요)
+
+### Phase 4 완료 상세
+
+- [x] 테마 전환 UI 컴포넌트 (`components/theme-toggle.tsx`)
+  - 라이트/다크/시스템 모드 전환 지원
+  - DropdownMenu를 통한 테마 선택 UI
+  - 접근성: ARIA 속성, 키보드 네비게이션 지원
+- [x] ThemeProvider 통합 (`app/layout.tsx`)
+  - next-themes ThemeProvider 추가
+  - suppressHydrationWarning으로 하이드레이션 경고 방지
+  - Skip to content 링크 추가 (접근성)
+- [x] 스켈레톤 컴포넌트 생성 (`components/loading/`)
+  - CardSkeleton: 캠핑 카드 로딩 UI
+  - MapSkeleton: 지도 로딩 UI
+  - ImageSkeleton: 이미지 로딩 UI (aspect-ratio 지원)
+  - DetailSkeleton: 상세페이지 로딩 UI
+  - 모든 스켈레톤에 접근성 속성 추가 (role="status", aria-label)
+- [x] 로딩 상태 적용
+  - CampingList: CardSkeleton 적용
+  - NaverMap: MapSkeleton 적용
+  - 로딩 상태에 스크린 리더 지원 (sr-only 텍스트)
+- [x] 접근성 개선 (WCAG 2.1 AA 준수 목표)
+  - CampingCard: aria-label, 포커스 스타일, 이미지 alt 텍스트 개선, 시설 목록 role 추가
+  - CampingSearch: 라벨 연결, ARIA 속성 (aria-busy, aria-describedby), 로딩 상태 안내
+  - CampingFilters: 필터 섹션 role="region", 체크박스 aria-label 추가
+  - CampingList: 결과 개수 aria-live, 목록 role="list", 페이지네이션 nav 태그 및 aria-current
+  - NaverMap: role="application", aria-hidden 속성 관리
+  - 모든 버튼/링크에 포커스 링 스타일 적용
+- [x] 키보드 네비게이션 지원
+  - 전역 CSS에 :focus-visible 스타일 추가
+  - 모든 인터랙티브 요소에 일관된 포커스 링 (ring-2 ring-primary)
+  - Tab 순서 논리적 구성
+- [x] 스크린 리더 지원
+  - Skip to content 링크 추가 (app/layout.tsx)
+  - 모든 아이콘에 aria-hidden="true" 추가
+  - 숨김 텍스트 .sr-only 클래스 정의 및 적용
+  - 로딩 상태, 에러 상태에 명확한 안내 메시지
+- [x] 포커스 스타일 개선 (`app/globals.css`)
+  - :focus-visible 전역 스타일 추가
+  - .sr-only 유틸리티 클래스 정의
+  - focus:not-sr-only 스타일 지원
+- [x] 404 페이지 (`app/not-found.tsx`)
+  - 캠핑 테마 디자인 (Tent 아이콘)
+  - 명확한 에러 메시지 및 안내
+  - 홈으로 가기, 캠핑장 검색 링크 제공
+  - 접근성: 포커스 스타일, aria-label 적용
+- [x] 동적 Sitemap 생성 (`app/sitemap.ts`)
+  - Next.js 15 MetadataRoute.Sitemap 활용
+  - 고캠핑 API를 통한 캠핑장 목록 조회
+  - 각 캠핑장 상세페이지 URL 자동 생성
+  - changeFrequency 및 priority 설정
+- [x] Robots.txt 생성 (`app/robots.ts`)
+  - 모든 검색 엔진 허용 (User-agent: \*)
+  - /api/, /admin/ 경로 차단
+  - Sitemap URL 지정
+- [x] 성능 최적화 (`next.config.ts`, `app/layout.tsx`, `app/page.tsx`)
+  - 이미지 최적화: WebP/AVIF 포맷 지원, 캐싱 설정, 고캠핑 API 도메인 추가
+  - 폰트 최적화: display: swap 적용, 주요 폰트만 preload
+  - 번들 최적화: NaverMap 동적 import, 코드 스플리팅 설정
+  - 압축 및 보안 헤더 최적화 (compress: true, poweredByHeader: false)
+- [x] Web Vitals 모니터링 (`components/web-vitals.tsx`)
+  - LCP, CLS 측정 및 로깅
+  - 성능 임계값 경고
+  - 페이지 로드 시간 추적
+- [x] Lighthouse 측정 가이드 작성 (`docs/LIGHTHOUSE_CHECKLIST.md`)
+  - 측정 방법 안내
+  - 최적화 체크리스트
+  - 추가 최적화 권장사항
 
 ---
 

@@ -138,10 +138,10 @@ export function CampingFilters({ onFilterChange }: CampingFiltersProps) {
     sortOrder !== SORT_OPTIONS.NAME;
 
   return (
-    <div className="space-y-4 p-4 bg-white dark:bg-gray-800 rounded-lg shadow-md">
+    <div className="space-y-4 p-4 bg-white dark:bg-gray-800 rounded-lg shadow-md" role="region" aria-label="캠핑장 필터">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Filter className="w-5 h-5 text-green-600 dark:text-green-400" />
+          <Filter className="w-5 h-5 text-green-600 dark:text-green-400" aria-hidden="true" />
           <h2 className="text-lg font-semibold">필터</h2>
         </div>
         {hasActiveFilters && (
@@ -149,9 +149,10 @@ export function CampingFilters({ onFilterChange }: CampingFiltersProps) {
             variant="ghost"
             size="sm"
             onClick={resetFilters}
-            className="text-sm"
+            className="text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+            aria-label="필터 초기화"
           >
-            <X className="w-4 h-4 mr-1" />
+            <X className="w-4 h-4 mr-1" aria-hidden="true" />
             초기화
           </Button>
         )}
@@ -195,14 +196,15 @@ export function CampingFilters({ onFilterChange }: CampingFiltersProps) {
 
       {/* 시설 필터 */}
       <div className="space-y-2">
-        <Label>시설</Label>
-        <div className="grid grid-cols-2 gap-2">
+        <Label id="facilities-label">시설</Label>
+        <div className="grid grid-cols-2 gap-2" role="group" aria-labelledby="facilities-label">
           {FACILITY_LIST.slice(0, 8).map((facility) => (
             <div key={facility} className="flex items-center space-x-2">
               <Checkbox
                 id={`facility-${facility}`}
                 checked={selectedFacilities.includes(facility)}
                 onCheckedChange={() => toggleFacility(facility)}
+                aria-label={`${facility} 시설 ${selectedFacilities.includes(facility) ? "선택됨" : "선택 안됨"}`}
               />
               <Label
                 htmlFor={`facility-${facility}`}

@@ -99,32 +99,42 @@ export function CampingSearch({
 
   return (
     <div className="relative w-full">
+      <label htmlFor="camping-search-input" className="sr-only">
+        캠핑장 검색
+      </label>
       <div className="relative flex items-center">
-        <Search className="absolute left-3 w-5 h-5 text-gray-400 pointer-events-none" />
+        <Search className="absolute left-3 w-5 h-5 text-gray-400 pointer-events-none" aria-hidden="true" />
         <Input
+          id="camping-search-input"
           type="text"
           value={keyword}
           onChange={(e) => setKeyword(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
-          className="pl-10 pr-10 h-12 text-base"
+          className="pl-10 pr-10 h-12 text-base focus:ring-2 focus:ring-primary focus:ring-offset-2"
           disabled={isSearching}
+          aria-label="캠핑장 검색"
+          aria-describedby={isSearching ? "search-loading" : undefined}
+          aria-busy={isSearching}
         />
         {keyword && (
           <Button
             variant="ghost"
             size="sm"
             onClick={handleClear}
-            className="absolute right-1 h-8 w-8 p-0"
+            className="absolute right-1 h-8 w-8 p-0 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
             disabled={isSearching}
+            aria-label="검색어 지우기"
           >
-            <X className="w-4 h-4" />
+            <X className="w-4 h-4" aria-hidden="true" />
+            <span className="sr-only">검색어 지우기</span>
           </Button>
         )}
       </div>
       {isSearching && (
-        <div className="absolute right-3 top-1/2 -translate-y-1/2">
-          <div className="animate-spin rounded-full h-4 w-4 border-2 border-green-600 border-t-transparent"></div>
+        <div id="search-loading" className="absolute right-3 top-1/2 -translate-y-1/2" role="status" aria-live="polite">
+          <div className="animate-spin rounded-full h-4 w-4 border-2 border-green-600 border-t-transparent" aria-hidden="true"></div>
+          <span className="sr-only">검색 중...</span>
         </div>
       )}
     </div>

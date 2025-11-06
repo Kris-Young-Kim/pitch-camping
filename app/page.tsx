@@ -21,12 +21,13 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
+import dynamic from "next/dynamic";
 import { CampingFilters } from "@/components/camping-filters";
 import { CampingList } from "@/components/camping-list";
 import { CampingSearch } from "@/components/camping-search";
-import { NaverMap } from "@/components/naver-map";
+import { MapSkeleton } from "@/components/loading/map-skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Map, List } from "lucide-react";
 import type { CampingFilter, CampingSite } from "@/types/camping";
@@ -36,7 +37,13 @@ import {
   SORT_OPTIONS,
 } from "@/constants/camping";
 
-export default function Home() {
+// NaverMap 동적 import (SSR 비활성화, 번들 분리)
+const NaverMap = dynamic(() => import("@/components/naver-map").then(mod => ({ default: mod.NaverMap })), {
+  ssr: false,
+  loading: () => <MapSkeleton />,
+});
+
+function HomeContent() {
   const searchParams = useSearchParams();
   const [filter, setFilter] = useState<CampingFilter>({});
   const [campings, setCampings] = useState<CampingSite[]>([]);
@@ -199,5 +206,24 @@ export default function Home() {
         </div>
       </div>
     </main>
+  );
+}
+
+export default function Home() {
+  return (
+    <Suspense fallback={
+      <div className="container mx-auto py-8 px-4">
+        <div className="space-y-6">
+          <div className="h-12 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="h-64 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+            ))}
+          </div>
+        </div>
+      </div>
+    }>
+      <HomeContent />
+    </Suspense>
   );
 }

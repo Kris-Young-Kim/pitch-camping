@@ -46,21 +46,24 @@ export function CampingCard({ camping, onCardClick }: CampingCardProps) {
         handleCardClick();
         // 지도 연동을 위해 기본 동작은 유지하되, 호버 시에는 지도로만 이동
       }}
-      className="group block bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-xl transition-all duration-200 overflow-hidden border border-gray-200 dark:border-gray-700"
+      className="group block bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-xl transition-all duration-200 overflow-hidden border border-gray-200 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+      aria-label={`${camping.facltNm} 캠핑장 상세 정보 보기`}
     >
       {/* 이미지 영역 */}
       <div className="relative w-full h-48 overflow-hidden bg-gray-200 dark:bg-gray-700">
         <Image
           src={getImageUrl(camping.firstImageUrl)}
-          alt={camping.facltNm}
+          alt={`${camping.facltNm} 캠핑장 이미지`}
           fill
           className="object-cover group-hover:scale-105 transition-transform duration-200"
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          priority={false}
+          loading="lazy"
         />
         {/* 캠핑 타입 뱃지 */}
         {camping.induty && (
           <div className="absolute top-2 left-2">
-            <span className="px-2 py-1 text-xs font-semibold bg-green-600 text-white rounded">
+            <span className="px-2 py-1 text-xs font-semibold bg-green-600 text-white rounded" aria-label={`캠핑 타입: ${camping.induty}`}>
               {camping.induty}
             </span>
           </div>
@@ -91,34 +94,34 @@ export function CampingCard({ camping, onCardClick }: CampingCardProps) {
 
         {/* 시설 아이콘 */}
         {camping.sbrsCl && (
-          <div className="flex items-center gap-3 flex-wrap">
+          <div className="flex items-center gap-3 flex-wrap" role="list" aria-label="캠핑장 시설">
             {camping.sbrsCl.includes("화장실") && (
-              <div className="flex items-center gap-1 text-xs text-gray-600 dark:text-gray-400">
-                <Droplets className="w-4 h-4" />
+              <div className="flex items-center gap-1 text-xs text-gray-600 dark:text-gray-400" role="listitem">
+                <Droplets className="w-4 h-4" aria-hidden="true" />
                 <span>화장실</span>
               </div>
             )}
             {camping.sbrsCl.includes("샤워장") && (
-              <div className="flex items-center gap-1 text-xs text-gray-600 dark:text-gray-400">
-                <Droplets className="w-4 h-4" />
+              <div className="flex items-center gap-1 text-xs text-gray-600 dark:text-gray-400" role="listitem">
+                <Droplets className="w-4 h-4" aria-hidden="true" />
                 <span>샤워장</span>
               </div>
             )}
             {camping.sbrsCl.includes("전기") && (
-              <div className="flex items-center gap-1 text-xs text-gray-600 dark:text-gray-400">
-                <Zap className="w-4 h-4" />
+              <div className="flex items-center gap-1 text-xs text-gray-600 dark:text-gray-400" role="listitem">
+                <Zap className="w-4 h-4" aria-hidden="true" />
                 <span>전기</span>
               </div>
             )}
             {camping.sbrsCl.includes("와이파이") && (
-              <div className="flex items-center gap-1 text-xs text-gray-600 dark:text-gray-400">
-                <Wifi className="w-4 h-4" />
+              <div className="flex items-center gap-1 text-xs text-gray-600 dark:text-gray-400" role="listitem">
+                <Wifi className="w-4 h-4" aria-hidden="true" />
                 <span>와이파이</span>
               </div>
             )}
             {camping.sbrsCl.includes("주차") && (
-              <div className="flex items-center gap-1 text-xs text-gray-600 dark:text-gray-400">
-                <Car className="w-4 h-4" />
+              <div className="flex items-center gap-1 text-xs text-gray-600 dark:text-gray-400" role="listitem">
+                <Car className="w-4 h-4" aria-hidden="true" />
                 <span>주차</span>
               </div>
             )}
