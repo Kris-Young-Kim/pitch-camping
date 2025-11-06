@@ -31,12 +31,6 @@ const nextConfig: NextConfig = {
         protocol: "https",
         pathname: "/**",
       },
-      // 고캠핑 API 이미지 도메인 (호환성 유지)
-      { 
-        hostname: "gocamping.or.kr",
-        protocol: "https",
-        pathname: "/**",
-      },
     ],
     formats: ["image/avif", "image/webp"],
     minimumCacheTTL: 86400, // 24시간 캐시
