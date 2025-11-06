@@ -32,9 +32,12 @@ import { PAGINATION_DEFAULTS } from "@/constants/camping";
 
 interface CampingListProps {
   filter?: CampingFilter;
+  onCampingClick?: (camping: CampingSite) => void;
+  selectedCampingId?: string;
+  onCampingsChange?: (campings: CampingSite[]) => void;
 }
 
-export function CampingList({ filter }: CampingListProps) {
+export function CampingList({ filter, onCampingClick, selectedCampingId, onCampingsChange }: CampingListProps) {
   const searchParams = useSearchParams();
   const [campings, setCampings] = useState<CampingSite[]>([]);
   const [loading, setLoading] = useState(true);
@@ -77,6 +80,9 @@ export function CampingList({ filter }: CampingListProps) {
 
         setCampings(items);
         setTotalCount(response.response?.body?.totalCount || 0);
+        
+        // 상위 컴포넌트로 캠핑장 목록 전달
+        onCampingsChange?.(items);
       } catch (err) {
         console.error("[CampingList] API 호출 오류:", err);
         setError(
@@ -171,7 +177,11 @@ export function CampingList({ filter }: CampingListProps) {
       {/* 캠핑장 그리드 */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {campings.map((camping) => (
-          <CampingCard key={camping.contentId} camping={camping} />
+          <CampingCard 
+            key={camping.contentId} 
+            camping={camping}
+            onCardClick={onCampingClick}
+          />
         ))}
       </div>
 

@@ -23,6 +23,9 @@ import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { campingApi, CampingApiClient } from "@/lib/api/camping-api";
+import { DetailGallery } from "@/components/camping-detail/detail-gallery";
+import { ShareButton } from "@/components/camping-detail/share-button";
+import { BookmarkButton } from "@/components/camping-detail/bookmark-button";
 import type { CampingSiteDetail } from "@/types/camping";
 import type { Metadata } from "next";
 
@@ -146,23 +149,22 @@ export default async function CampingDetailPage({
           </Button>
         </Link>
 
-        {/* 기본 정보 섹션 (임시 - 컴포넌트로 분리 예정) */}
+        {/* 기본 정보 섹션 */}
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
-            {detail.facltNm}
-          </h1>
-
-          {detail.firstImageUrl && (
-            <div className="relative w-full h-64 md:h-96 mb-6 rounded-lg overflow-hidden">
-              <img
-                src={detail.firstImageUrl}
-                alt={detail.facltNm}
-                className="w-full h-full object-cover"
-              />
+          <div className="flex items-start justify-between mb-4">
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+              {detail.facltNm}
+            </h1>
+            <div className="flex gap-2">
+              <ShareButton contentId={contentId} />
+              <BookmarkButton contentId={contentId} />
             </div>
-          )}
+          </div>
 
-          <div className="space-y-4">
+          {/* 이미지 갤러리 */}
+          <DetailGallery camping={detail} />
+
+          <div className="space-y-4 mt-6">
             {detail.addr1 && (
               <div>
                 <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">

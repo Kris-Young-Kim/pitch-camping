@@ -27,20 +27,25 @@ import { getImageUrl, formatAddress } from "@/lib/utils/camping";
 
 interface CampingCardProps {
   camping: CampingSite;
+  onCardClick?: (camping: CampingSite) => void;
 }
 
-export function CampingCard({ camping }: CampingCardProps) {
+export function CampingCard({ camping, onCardClick }: CampingCardProps) {
   const handleCardClick = () => {
     console.log("[CampingCard] 카드 클릭:", {
       contentId: camping.contentId,
       name: camping.facltNm,
     });
+    onCardClick?.(camping);
   };
 
   return (
     <Link
       href={`/campings/${camping.contentId}`}
-      onClick={handleCardClick}
+      onClick={(e) => {
+        handleCardClick();
+        // 지도 연동을 위해 기본 동작은 유지하되, 호버 시에는 지도로만 이동
+      }}
       className="group block bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-xl transition-all duration-200 overflow-hidden border border-gray-200 dark:border-gray-700"
     >
       {/* 이미지 영역 */}
