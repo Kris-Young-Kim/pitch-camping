@@ -20,11 +20,28 @@ import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Shield, AlertTriangle } from "lucide-react";
 import { SafetyCard } from "@/components/safety/safety-card";
-import { getRecommendedTravelSafetyGuidelines, type TravelSafetyGuideline } from "@/lib/api/safety-guidelines";
+import { type TravelSafetyGuideline } from "@/lib/api/safety-guidelines";
 import type { TravelSiteDetail } from "@/types/travel";
 
 interface SafetyRecommendationsProps {
   travel: TravelSiteDetail;
+}
+
+/**
+ * 클라이언트 사이드에서 여행 안전 정보 조회
+ */
+async function fetchRecommendedSafetyGuidelines(region?: string): Promise<TravelSafetyGuideline[]> {
+  const params = new URLSearchParams();
+  params.append("limit", "3");
+  if (region) {
+    params.append("region", region);
+  }
+
+  const response = await fetch(`/api/safety-guidelines?${params.toString()}`);
+  if (!response.ok) {
+    throw new Error("여행 안전 정보 조회 실패");
+  }
+  return response.json();
 }
 
 export function SafetyRecommendations({ travel }: SafetyRecommendationsProps) {
@@ -40,7 +57,7 @@ export function SafetyRecommendations({ travel }: SafetyRecommendationsProps) {
         // 여행지 지역 정보 기반으로 안전 정보 추천
         // addr1에서 지역 추출 (예: "서울특별시", "제주특별자치도" 등)
         const region = travel.addr1 ? extractRegion(travel.addr1) : null;
-        const data = await getRecommendedTravelSafetyGuidelines(3, region || undefined);
+        const data = await fetchRecommendedSafetyGuidelines(region || undefined);
         setGuidelines(data);
       } catch (err) {
         console.error("Failed to fetch safety guidelines:", err);

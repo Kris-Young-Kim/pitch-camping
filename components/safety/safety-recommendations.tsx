@@ -55,7 +55,7 @@ export async function SafetyRecommendations({ campingType }: SafetyRecommendatio
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {recommendedGuidelines.map((guideline) => (
-              <SafetyCard key={guideline.id} guideline={guideline} showSeason={false} />
+              <SafetyCard key={guideline.id} guideline={guideline} showTravelType={true} />
             ))}
           </div>
         </CardContent>

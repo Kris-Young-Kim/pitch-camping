@@ -265,4 +265,5 @@ export type SafetyGuidelineFilter = TravelSafetyGuidelineFilter;
 export const getSafetyGuidelines = getTravelSafetyGuidelines;
 export const getSafetyGuidelineById = getTravelSafetyGuidelineById;
 export const incrementSafetyGuidelineView = incrementTravelSafetyGuidelineView;
+export const getRecommendedSafetyGuidelines = getRecommendedTravelSafetyGuidelines;
 
