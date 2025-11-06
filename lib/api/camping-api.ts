@@ -21,6 +21,8 @@ import type {
   CampingListResponse,
   CampingDetailResponse,
 } from "@/types/camping";
+import { measureApiResponse } from "@/lib/utils/performance";
+import { logError, logInfo } from "@/lib/utils/logger";
 
 /**
  * 고캠핑 API 클라이언트 클래스
@@ -45,7 +47,7 @@ export class CampingApiClient {
       "http://apis.data.go.kr/B551011/GoCamping";
 
     if (!this.serviceKey) {
-      console.error("[CampingApiClient] API 키가 설정되지 않았습니다.");
+      logError("[CampingApiClient] API 키가 설정되지 않았습니다.");
     }
   }
 
@@ -56,8 +58,7 @@ export class CampingApiClient {
     endpoint: string,
     params: Record<string, string | number | undefined> = {}
   ): Promise<T> {
-    console.group(`[CampingApiClient] API 요청: ${endpoint}`);
-    console.log("요청 파라미터:", params);
+    logInfo(`[CampingApiClient] API 요청: ${endpoint}`, { params });
 
     const url = new URL(`${this.baseUrl}${endpoint}`);
 
@@ -78,12 +79,19 @@ export class CampingApiClient {
     const timeoutId = setTimeout(() => controller.abort(), this.timeout);
 
     try {
-      const response = await fetch(url.toString(), {
-        signal: controller.signal,
-        headers: {
-          Accept: "application/json",
-        },
-      });
+      const response = await measureApiResponse(
+        () =>
+          fetch(url.toString(), {
+            signal: controller.signal,
+            headers: {
+              Accept: "application/json",
+            },
+            next: {
+              revalidate: endpoint === "/detailIntro" ? 21600 : 3600, // 상세: 6시간, 목록: 1시간
+            },
+          }),
+        endpoint
+      );
 
       clearTimeout(timeoutId);
 
@@ -94,27 +102,26 @@ export class CampingApiClient {
       }
 
       const data = await response.json();
-      console.log("API 응답:", data);
 
       // 응답 검증
       if (data.response?.header?.resultCode !== "0000") {
         const errorMsg =
-          data.response?.header?.resultMsg || "알 수 없는 오류";
-        console.error("[CampingApiClient] API 응답 오류:", errorMsg);
-        throw new Error(`API 오류: ${errorMsg}`);
+          data.response?.header?.resultMsg || "알 수 없는 API 오류";
+        logError(`API 오류 (${data.response?.header?.resultCode})`, new Error(errorMsg), { endpoint, params });
+        throw new Error(`API 오류 (${data.response?.header?.resultCode}): ${errorMsg}`);
       }
 
-      console.groupEnd();
+      logInfo(`API 요청 성공: ${endpoint}`, { params });
       return data as T;
     } catch (error) {
       clearTimeout(timeoutId);
-      console.error("[CampingApiClient] 요청 중 오류 발생:", error);
-      console.groupEnd();
 
       if (error instanceof Error && error.name === "AbortError") {
-        throw new Error("API 요청 시간 초과");
+        logError("[CampingApiClient] API 요청 시간 초과", error, { endpoint });
+        throw new Error("API 요청 시간이 초과되었습니다.");
       }
 
+      logError("[CampingApiClient] API 요청 중 오류 발생", error, { endpoint, params });
       throw error;
     }
   }
@@ -127,7 +134,7 @@ export class CampingApiClient {
   async getCampingList(
     filter: CampingFilter = {}
   ): Promise<CampingListResponse> {
-    console.log("[CampingApiClient] 캠핑장 목록 조회 시작");
+    logInfo("[CampingApiClient] 캠핑장 목록 조회", { filter });
 
     const params: Record<string, string | number | undefined> = {
       pageNo: filter.pageNo || 1,
@@ -173,7 +180,7 @@ export class CampingApiClient {
    * @returns 캠핑장 상세 정보 응답
    */
   async getCampingDetail(contentId: string): Promise<CampingDetailResponse> {
-    console.log(`[CampingApiClient] 캠핑장 상세 정보 조회: ${contentId}`);
+    logInfo(`[CampingApiClient] 캠핑장 상세 정보 조회`, { contentId });
 
     if (!contentId) {
       throw new Error("contentId는 필수입니다.");
@@ -196,7 +203,7 @@ export class CampingApiClient {
     keyword: string,
     filter: Omit<CampingFilter, "keyword"> = {}
   ): Promise<CampingListResponse> {
-    console.log(`[CampingApiClient] 키워드 검색: ${keyword}`);
+    logInfo(`[CampingApiClient] 키워드 검색`, { keyword, filter });
 
     if (!keyword || keyword.trim() === "") {
       throw new Error("검색 키워드는 필수입니다.");
