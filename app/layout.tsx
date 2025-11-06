@@ -8,7 +8,7 @@ import { SyncUserProvider } from "@/components/providers/sync-user-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { WebVitals } from "@/components/web-vitals";
 import { AccessibilityToolbar } from "@/components/accessibility/accessibility-toolbar";
-import Navbar from "@/components/Navbar";
+import { GlobalNav } from "@/components/navigation/global-nav";
 import { FooterNav } from "@/components/navigation/footer-nav";
 import "./globals.css";
 
@@ -99,7 +99,7 @@ export default function RootLayout({
                 메인 콘텐츠로 건너뛰기
               </a>
 
-              <Navbar />
+              <GlobalNav />
               <main id="main-content" className="min-h-[calc(100vh-4rem)]">
                 {children}
               </main>
