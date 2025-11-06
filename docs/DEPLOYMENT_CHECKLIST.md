@@ -9,11 +9,18 @@
 모든 필수 환경 변수가 Vercel에 설정되어 있는지 확인:
 
 #### Clerk 인증
-- [ ] `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`
-- [ ] `CLERK_SECRET_KEY`
+- [ ] `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` (⚠️ **프로덕션 키 사용 필수**)
+- [ ] `CLERK_SECRET_KEY` (⚠️ **프로덕션 키 사용 필수**)
 - [ ] `NEXT_PUBLIC_CLERK_SIGN_IN_URL`
 - [ ] `NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL`
 - [ ] `NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL`
+
+**⚠️ 중요: Clerk 프로덕션 키 설정 방법**
+1. [Clerk Dashboard](https://dashboard.clerk.com) 접속
+2. 프로젝트 선택 → **API Keys** 메뉴
+3. **Production** 환경의 키 복사 (Development 키가 아닌 Production 키 사용)
+4. Vercel 환경 변수에 설정
+5. 개발 환경에서는 "Clerk has been loaded with development keys" 경고가 정상입니다. 프로덕션 배포 시에는 이 경고가 나타나지 않아야 합니다.
 
 #### Supabase
 - [ ] `NEXT_PUBLIC_SUPABASE_URL`

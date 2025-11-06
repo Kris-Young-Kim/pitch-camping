@@ -21,7 +21,7 @@
 
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
+import { useState, useEffect, useCallback, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import dynamic from "next/dynamic";
 import { CampingFilters } from "@/components/camping-filters";
@@ -90,11 +90,11 @@ function HomeContent() {
     console.groupEnd();
   }, [searchParams]);
 
-  const handleFilterChange = (newFilter: CampingFilter) => {
+  const handleFilterChange = useCallback((newFilter: CampingFilter) => {
     console.log("[Home] 필터 변경 콜백:", newFilter);
     setFilter(newFilter);
     setSelectedCampingId(undefined); // 필터 변경 시 선택 해제
-  };
+  }, []);
 
   const handleCampingClick = (camping: CampingSite) => {
     console.log("[Home] 캠핑장 클릭:", camping.facltNm);

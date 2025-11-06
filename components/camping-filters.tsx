@@ -20,7 +20,7 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
@@ -51,6 +51,12 @@ interface CampingFiltersProps {
 export function CampingFilters({ onFilterChange }: CampingFiltersProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  
+  // onFilterChange를 ref로 저장하여 안정화
+  const onFilterChangeRef = useRef(onFilterChange);
+  useEffect(() => {
+    onFilterChangeRef.current = onFilterChange;
+  }, [onFilterChange]);
 
   // 필터 상태 관리
   const [region, setRegion] = useState<string>(
@@ -97,11 +103,12 @@ export function CampingFilters({ onFilterChange }: CampingFiltersProps) {
 
     router.replace(`/?${params.toString()}`, { scroll: false });
 
-    // 콜백 호출
-    onFilterChange?.(filter);
+    // 콜백 호출 (ref를 통해 안정적으로 호출)
+    onFilterChangeRef.current?.(filter);
 
     console.groupEnd();
-  }, [region, campingType, selectedFacilities, sortOrder, router, searchParams, onFilterChange]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [region, campingType, selectedFacilities, sortOrder, router]);
 
   // 시설 필터 토글
   const toggleFacility = (facility: string) => {
