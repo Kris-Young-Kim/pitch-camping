@@ -2,360 +2,365 @@
 
 ## 개요
 
-Phase 4는 프로덕션 배포 준비를 위한 사용자 경험 개선, 접근성 강화, SEO 최적화를 완료하는 단계입니다. Lighthouse 점수 80+ 달성을 목표로 전반적인 품질 향상을 추구합니다.
+Phase 4는 Pitch Travel 서비스의 사용자 경험과 접근성을 향상시키고, 성능을 최적화하는 단계입니다. SEO 최적화, 접근성 기능 구현, 그리고 남은 성능 최적화 작업을 완료합니다.
 
 ## 목표
 
-- 다크/라이트 모드 완벽 지원
-- 모든 로딩 상태 개선 (Skeleton UI)
-- WCAG 2.1 AA 준수 접근성
-- SEO 기본 설정 완료 (sitemap, robots.txt)
-- Lighthouse 점수 80+ 달성
+1. **SEO 최적화 완료**: 동적 Sitemap 생성 및 404 페이지 개선
+2. **성능 최적화 완료**: TourAPI 이미지 도메인 추가, 최종 성능 튜닝
+3. **접근성 기능 구현**: 화면 확대/축소, 음성 출력 기능 추가
+4. **디자인 개선**: 여행 테마에 맞는 UI/UX 최종 점검 및 개선
 
-## 작업 항목
+## 현재 상태
 
-### 1. 다크/라이트 모드 완벽 지원
+### ✅ 완료된 작업
 
-#### 1.1 테마 전환 UI 구현
+- 시각적 브랜딩·컬러스킴 다크/라이트 모드 완벽 지원
+- 이미지·지도·목록·에러·로딩 상태별 세밀한 Skeleton/스피너
+- ARIA, 키보드/스크린리더 지원 등 접근성 전수 검사
+- SEO: robots.txt 생성 완료
+- Lighthouse 점수 80+ 달성 준비 완료 (코드 레벨 최적화 완료)
+- 네비게이션 구조 개선 (GNB, LNB, SNB, FNB)
+- Web Vitals 모니터링 구현
+- Lighthouse 측정 가이드 작성
+- 접근성 기능 계획서 작성
 
-**파일**: `components/theme-toggle.tsx`
+### ⏳ 미완료 작업
 
-**구현 내용**:
-- 테마 전환 버튼 컴포넌트 (Sun/Moon 아이콘)
-- `next-themes`의 `useTheme` 훅 사용
-- 시스템 설정, 라이트, 다크 모드 전환 지원
-- 부드러운 트랜지션 애니메이션
+1. **404 페이지 업데이트** (`app/not-found.tsx`)
+   - 현재: 캠핑 테마로 구현됨
+   - 필요: 여행 테마로 업데이트 (MapPin 또는 Plane 아이콘)
 
-**기술 사항**:
-- lucide-react의 Sun, Moon 아이콘 사용
-- Button 컴포넌트로 구현
-- 접근성: aria-label 추가
+2. **동적 Sitemap 업데이트** (`app/sitemap.ts`)
+   - 현재: 고캠핑 API 사용 중
+   - 필요: TourAPI로 변경, 여행지 상세페이지 URL 생성
 
-#### 1.2 ThemeProvider 통합
+3. **성능 최적화** (`next.config.ts`)
+   - 현재: 고캠핑 API 이미지 도메인만 포함
+   - 필요: TourAPI 이미지 도메인 추가
 
-**파일**: `app/layout.tsx`
+4. **접근성 기능 구현** (`components/accessibility/`)
+   - 현재: 계획서만 작성됨
+   - 필요: 화면 확대/축소, 음성 출력 기능 구현
 
-**구현 내용**:
-- `next-themes`의 `ThemeProvider` 추가
-- `attribute="class"` 설정 (Tailwind CSS dark 모드)
-- `enableSystem` 옵션 활성화
-- `defaultTheme="system"` 설정
+5. **디자인 최종 점검**
+   - 여행 테마에 맞는 아이콘 및 텍스트 업데이트 확인
 
-**헤더 통합**:
-- 헤더에 테마 토글 버튼 추가
-- 모바일/데스크톱 모두 지원
+---
 
-#### 1.3 다크 모드 스타일 검증
+## 작업 계획
 
-**검사 대상 컴포넌트**:
-- `components/camping-card.tsx`
-- `components/camping-list.tsx`
-- `components/camping-filters.tsx`
-- `components/camping-search.tsx`
-- `components/naver-map.tsx`
-- `components/camping-detail/review-section.tsx`
-- 모든 페이지 컴포넌트
+### Week 1: SEO 및 성능 최적화 완료
 
-**작업 내용**:
-- 모든 컴포넌트에서 `dark:` 클래스 확인
-- 색상 대비 검증 (WCAG AA)
-- 다크 모드에서 이미지 가시성 확인
-
-#### 1.4 브랜딩 컬러 스킴 조정
-
-**파일**: `app/globals.css`
-
-**작업 내용**:
-- 캠핑/자연 테마에 맞는 초록색, 갈색 계열 조정
-- Primary 색상: 초록색 계열 (`#22c55e` 또는 유사)
-- Secondary 색상: 갈색/베이지 계열
-
-**다크 모드 색상**:
-- 어두운 배경에 최적화된 색상 조정
-- 가독성 확보
-
-### 2. 로딩 상태 개선
-
-#### 2.1 재사용 가능한 스켈레톤 컴포넌트 생성
-
-**파일**: `components/loading/card-skeleton.tsx`
-
-**구현 내용**:
-- 캠핑 카드와 동일한 레이아웃의 스켈레톤
-- 이미지 영역, 텍스트 라인, 뱃지 영역
-- `animate-pulse` 애니메이션
-
-**파일**: `components/loading/map-skeleton.tsx`
-
-**구현 내용**:
-- 지도 영역과 동일한 크기의 스켈레톤
-- 중앙에 스피너 또는 로딩 텍스트
-- 네이버 지도 스타일과 유사한 디자인
-
-**파일**: `components/loading/image-skeleton.tsx`
-
-**구현 내용**:
-- 이미지 로딩 중 표시할 스켈레톤
-- aspect-ratio 유지
-- Blur placeholder 효과
-
-**파일**: `components/loading/detail-skeleton.tsx`
-
-**구현 내용**:
-- 상세페이지 레이아웃과 동일한 스켈레톤
-- 이미지, 텍스트, 정보 섹션별 스켈레톤
-
-#### 2.2 각 컴포넌트에 로딩 상태 적용
-
-**파일**: `components/naver-map.tsx`
-
-**작업 내용**:
-- 지도 로드 완료 전 `MapSkeleton` 표시
-- 스크립트 로드 상태 관리 개선
-
-**파일**: `components/camping-detail/detail-gallery.tsx`
-
-**작업 내용**:
-- 이미지 로딩 중 `ImageSkeleton` 표시
-- Lazy loading 적용
-
-**파일**: `app/campings/[contentId]/page.tsx`
-
-**작업 내용**:
-- React Suspense로 `DetailSkeleton` 적용
-- 데이터 로딩 중 스켈레톤 표시
-
-**파일**: `components/camping-list.tsx`
-
-**작업 내용**:
-- 기존 Skeleton을 `CardSkeleton` 컴포넌트로 교체
-- 일관된 로딩 UI
-
-### 3. 접근성 전수 검사 및 개선
-
-#### 3.1 ARIA 속성 추가
-
-**작업 내용**:
-- 모든 인터랙티브 요소에 `aria-label` 추가
-- 폼 요소에 `aria-describedby` 추가 (에러 메시지)
-- 드롭다운/모달에 `aria-expanded`, `aria-controls` 추가
-- 네비게이션에 `aria-current="page"` 추가
-
-**대상 컴포넌트**:
-- `components/camping-filters.tsx`: Select, Checkbox
-- `components/camping-search.tsx`: Input, Button
-- `components/camping-card.tsx`: Link
-- `components/naver-map.tsx`: 지도 컨테이너
-- `components/camping-detail/review-section.tsx`: 폼, 버튼
-- `components/camping-detail/share-button.tsx`: Button
-- `components/camping-detail/bookmark-button.tsx`: Button
-
-#### 3.2 키보드 네비게이션 지원
-
-**작업 내용**:
-- 모든 버튼, 링크가 키보드로 접근 가능
-- Tab 순서 논리적 구성 (위→아래, 좌→우)
-- Enter/Space로 버튼 활성화
-- Escape로 모달/드롭다운 닫기
-- 화살표 키로 목록 네비게이션 (선택적)
-
-**포커스 스타일**:
-- 모든 인터랙티브 요소에 명확한 포커스 링
-- `focus:ring-2 focus:ring-green-500`
-- `focus:outline-none` (커스텀 스타일로 대체)
-
-#### 3.3 스크린 리더 지원
-
-**작업 내용**:
-- 의미 있는 alt 텍스트 (이미지)
-- 숨김 텍스트 추가 (`sr-only` 클래스)
-- Skip to content 링크 추가 (`app/layout.tsx`)
-
-**파일**: `app/layout.tsx`
-
-**Skip to content 링크**:
-```tsx
-<a href="#main-content" className="sr-only focus:not-sr-only">
-  메인 콘텐츠로 건너뛰기
-</a>
-```
-
-#### 3.4 색상 대비 검증
-
-**작업 내용**:
-- 모든 텍스트/배경 색상 조합의 대비율 확인
-- WCAG AA 기준: 4.5:1 (일반 텍스트), 3:1 (큰 텍스트)
-- 대비율이 부족한 경우 색상 조정
-
-**검증 도구**:
-- 브라우저 개발자 도구 (Accessibility 탭)
-- 색상 대비 계산기 사용
-
-### 4. 404/오프라인 페이지
-
-#### 4.1 404 페이지
+#### 1.1 404 페이지 업데이트
 
 **파일**: `app/not-found.tsx`
 
-**구현 내용**:
-- 캠핑 테마에 맞는 디자인
-- "페이지를 찾을 수 없습니다" 메시지
-- 홈으로 돌아가기 버튼
-- 검색 기능 링크 (선택적)
+**작업 내용**:
+- 캠핑 테마 아이콘 (Tent) → 여행 테마 아이콘 (MapPin 또는 Plane) 변경
+- "캠핑장 검색" → "여행지 검색" 텍스트 변경
+- 링크 URL 업데이트 (`/?keyword=` → 여행지 검색으로 변경)
+- 여행 테마에 맞는 메시지 및 디자인 조정
 
-**디자인**:
-- Tent 아이콘 또는 캠핑 이미지
-- 친화적인 에러 메시지
-- 다크 모드 지원
+**완료 기준**:
+- [ ] 여행 테마 아이콘 사용
+- [ ] 여행지 검색 링크 정상 동작
+- [ ] 접근성 속성 유지 (aria-label, 포커스 스타일)
+- [ ] 다크 모드 지원 확인
 
-#### 4.2 오프라인 안내
+**예상 소요 시간**: 30분
 
-**파일**: `app/offline/page.tsx` (선택적)
+---
 
-**구현 내용**:
-- 오프라인 상태 안내 페이지
-- 네트워크 연결 확인 안내
-- 재시도 버튼
-
-**파일**: `components/offline-indicator.tsx` (선택적)
-
-**구현 내용**:
-- 오프라인 감지 시 상단 배너 표시
-- 네트워크 상태 모니터링
-- 자동 재연결 시 배너 숨김
-
-### 5. SEO 최적화
-
-#### 5.1 동적 Sitemap 생성
+#### 1.2 동적 Sitemap 업데이트
 
 **파일**: `app/sitemap.ts`
 
-**구현 내용**:
-- Next.js 15의 sitemap 기능 활용
-- 고캠핑 API를 통한 캠핑장 목록 조회
-- 각 캠핑장 상세페이지 URL 추가
-- 변경 빈도(changeFrequency) 및 우선순위(priority) 설정
+**작업 내용**:
+- `campingApi` → `travelApi` 변경
+- `normalizeItems` → `normalizeTravelItems` 변경
+- `contentId` → `contentid` 변경 (TourAPI 필드명)
+- URL 경로 변경: `/campings/` → `/travels/`
+- 환경변수 확인: `TOUR_API_KEY` 또는 `NEXT_PUBLIC_TOUR_API_KEY`
+- Sitemap URL 업데이트: `pitch-camping` → `pitch-travel`
 
-**구조**:
-- 홈페이지 (`/`): priority 1.0
-- 캠핑장 상세 (`/campings/[contentId]`): priority 0.8
-- 정적 페이지들: priority 0.5
+**완료 기준**:
+- [ ] TourAPI를 통한 여행지 목록 조회
+- [ ] 각 여행지 상세페이지 URL 자동 생성 (`/travels/{contentid}`)
+- [ ] 정적 페이지 포함 (홈, 안전 수칙, 피드백)
+- [ ] changeFrequency 및 priority 적절히 설정
+- [ ] 에러 처리 및 폴백 로직 유지
 
-#### 5.2 Robots.txt 생성
+**예상 소요 시간**: 1시간
 
-**파일**: `app/robots.ts`
+**주의사항**:
+- TourAPI는 대량 조회 시 Rate Limit이 있을 수 있음
+- 필요시 페이지네이션 또는 배치 처리 고려
+- Sitemap 크기 제한 확인 (50,000 URLs 권장)
 
-**구현 내용**:
-- 모든 검색 엔진 허용 (User-agent: *)
-- Sitemap URL 지정
-- 불필요한 경로 차단 (선택적)
+---
 
-**예시**:
-```
-User-agent: *
-Allow: /
-Disallow: /api/
-Sitemap: https://pitch-camping.vercel.app/sitemap.xml
-```
+#### 1.3 성능 최적화 완료
 
-#### 5.3 동적 메타데이터 개선
-
-**파일**: `app/campings/[contentId]/page.tsx`
+**파일**: `next.config.ts`
 
 **작업 내용**:
-- `generateMetadata` 함수 개선
-- 더 상세한 Open Graph 메타데이터
-- Twitter 카드 메타데이터 개선
-- 구조화된 데이터 (JSON-LD) 추가 (선택적)
+- TourAPI 이미지 도메인 추가
+  - 한국관광공사 이미지 서버 도메인 확인 및 추가
+  - 예상 도메인: `api.visitkorea.or.kr`, `tong.visitkorea.or.kr` 등
+- 이미지 최적화 설정 확인
+  - WebP/AVIF 포맷 지원 확인
+  - 캐싱 TTL 확인 (현재 24시간)
 
-**구조화된 데이터**:
-- LocalBusiness 스키마 (캠핑장 정보)
-- BreadcrumbList 스키마 (선택적)
+**완료 기준**:
+- [ ] TourAPI 이미지 도메인 `remotePatterns`에 추가
+- [ ] 이미지 최적화 포맷 확인 (WebP/AVIF)
+- [ ] 캐싱 설정 확인 (minimumCacheTTL)
+- [ ] 프로덕션 빌드 테스트
 
-### 6. 성능 최적화 및 Lighthouse 점수 달성
+**예상 소요 시간**: 30분
 
-#### 6.1 이미지 최적화
+**참고**:
+- TourAPI 이미지 URL 구조 확인 필요
+- 실제 이미지 도메인은 TourAPI 응답에서 확인 후 추가
+
+---
+
+### Week 2: 접근성 기능 구현
+
+#### 2.1 접근성 도구 모음 컴포넌트
+
+**파일**: `components/accessibility/accessibility-toolbar.tsx`
 
 **작업 내용**:
-- Next.js Image 컴포넌트 활용 확인
-- `priority` 속성 사용 (above-the-fold 이미지)
-- `loading="lazy"` 적용 (below-the-fold 이미지)
-- 적절한 `sizes` 속성 설정
+- 플로팅 버튼 생성 (우측 하단)
+- 접근성 아이콘 (Universal Access 또는 Settings)
+- 클릭 시 도구 모음 패널 열기/닫기
+- 접근성 속성 추가 (ARIA, 키보드 네비게이션)
+- localStorage를 통한 설정 저장
 
-**파일**: `next.config.js` (필요 시)
+**완료 기준**:
+- [ ] 플로팅 버튼 UI 구현
+- [ ] 패널 열기/닫기 애니메이션
+- [ ] 접근성 속성 적용
+- [ ] 설정 저장 기능
 
-**이미지 도메인 설정**:
-- 고캠핑 API 이미지 도메인 추가
-- 외부 이미지 최적화 설정
+**예상 소요 시간**: 2시간
 
-#### 6.2 폰트 최적화
+---
+
+#### 2.2 화면 확대/축소 기능
+
+**파일**: `components/accessibility/zoom-control.tsx`
+
+**작업 내용**:
+- CSS `transform: scale()` 또는 `zoom` 속성 사용
+- 100%, 125%, 150%, 200% 단계별 조절
+- 확대/축소 버튼 UI
+- 현재 확대율 표시
+- 초기화 버튼 (100%로 복원)
+- 키보드 단축키 지원 (Ctrl + +, Ctrl + -)
+- localStorage에 확대율 저장
+
+**완료 기준**:
+- [ ] 4단계 확대/축소 기능 구현
+- [ ] 현재 확대율 표시
+- [ ] 초기화 버튼 동작
+- [ ] 키보드 단축키 지원
+- [ ] 설정 저장 및 복원
+- [ ] 레이아웃 깨짐 방지 (overflow 처리)
+
+**예상 소요 시간**: 3시간
+
+**기술적 고려사항**:
+- `transform: scale()` 사용 권장 (더 넓은 브라우저 호환성)
+- body 또는 main 요소에 적용
+- 확대 시 스크롤바 처리
+
+---
+
+#### 2.3 음성 출력 기능
+
+**파일**: `components/accessibility/text-to-speech.tsx`
+
+**작업 내용**:
+- Web Speech API (SpeechSynthesis) 활용
+- 한국어 음성 지원 확인
+- 전체 페이지 읽기 기능
+- 선택 영역 읽기 기능
+- 재생 컨트롤 (재생, 일시정지, 중지, 속도 조절)
+- 텍스트 추출 로직 (main 요소 내 텍스트 수집)
+
+**완료 기준**:
+- [ ] 전체 페이지 읽기 기능
+- [ ] 선택 영역 읽기 기능
+- [ ] 재생 컨트롤 UI (재생, 일시정지, 중지)
+- [ ] 읽기 속도 조절 (0.5x ~ 2.0x)
+- [ ] 한국어 음성 지원 확인
+- [ ] 폴백 처리 (Web Speech API 미지원 시 안내)
+
+**예상 소요 시간**: 4시간
+
+**기술적 고려사항**:
+- Web Speech API 지원 여부 확인
+- 한국어 음성 엔진 사용 가능 여부 확인
+- 긴 텍스트 처리 시 메모리 관리
+- 읽기 중 스크롤 자동 추적 (선택적)
+
+---
+
+#### 2.4 접근성 도구 모음 통합
 
 **파일**: `app/layout.tsx`
 
 **작업 내용**:
-- 폰트 preload 추가
-- `display: swap` 설정 (FOUT 방지)
-- 폰트 파일 크기 최적화
+- `AccessibilityToolbar` 컴포넌트를 RootLayout에 추가
+- 접근성 도구 모음이 모든 페이지에서 사용 가능하도록 설정
 
-#### 6.3 번들 크기 최적화
+**완료 기준**:
+- [ ] RootLayout에 컴포넌트 추가
+- [ ] 모든 페이지에서 접근성 도구 사용 가능
+- [ ] 설정 저장 및 복원 정상 동작
 
-**작업 내용**:
-- Dynamic import 확인 (지도 컴포넌트 등)
-- 불필요한 의존성 제거
-- Tree shaking 확인
+**예상 소요 시간**: 30분
 
-**확인 대상**:
-- `components/naver-map.tsx`: 동적 로드 확인
-- 대용량 라이브러리: 필요한 부분만 import
+---
 
-#### 6.4 Web Vitals 모니터링
+### Week 3: 디자인 최종 점검 및 테스트
 
-**파일**: `lib/utils/performance.ts`
+#### 3.1 디자인 일관성 점검
 
 **작업 내용**:
-- Web Vitals 측정 함수 개선
-- LCP, FID, CLS 측정
-- 프로덕션 환경에서 분석 서비스 연동 (선택적)
+- 여행 테마에 맞는 아이콘 및 텍스트 확인
+- 캠핑 관련 용어가 남아있는지 확인
+- 여행지 관련 용어로 통일
+- 색상 테마 확인 (green → blue 또는 여행 테마 컬러)
 
-#### 6.5 Lighthouse 성능 측정
+**확인 파일**:
+- `app/not-found.tsx` (이미 업데이트 예정)
+- `components/travel-*.tsx` (이미 업데이트됨)
+- 기타 컴포넌트에서 캠핑 관련 용어 확인
+
+**완료 기준**:
+- [ ] 모든 컴포넌트에서 여행 테마 용어 사용
+- [ ] 아이콘 일관성 확인
+- [ ] 색상 테마 일관성 확인
+
+**예상 소요 시간**: 1시간
+
+---
+
+#### 3.2 접근성 테스트
 
 **작업 내용**:
-- 개발 서버에서 Lighthouse 실행
-- 성능, 접근성, SEO, Best Practices 점수 확인
-- 80점 미만 항목 개선
-- 목표 점수 달성 확인
+- 화면 확대/축소 기능 테스트
+- 음성 출력 기능 테스트
+- 키보드 네비게이션 테스트
+- 스크린 리더 테스트 (NVDA 또는 JAWS)
+- WCAG 2.1 AA 준수 확인
 
-**측정 항목**:
-- Performance: 80+
-- Accessibility: 90+
-- Best Practices: 90+
-- SEO: 90+
+**완료 기준**:
+- [ ] 모든 접근성 기능 정상 동작
+- [ ] WCAG 2.1 AA 기준 충족
+- [ ] 다양한 브라우저에서 테스트 완료
+
+**예상 소요 시간**: 2시간
+
+---
+
+#### 3.3 성능 최종 테스트
+
+**작업 내용**:
+- Lighthouse 측정 (Performance 80+ 목표)
+- Web Vitals 확인
+- 이미지 로딩 성능 확인
+- 번들 크기 확인
+
+**완료 기준**:
+- [ ] Lighthouse Performance 80+ 달성
+- [ ] Web Vitals 임계값 이내
+- [ ] 이미지 최적화 정상 동작
+- [ ] 번들 크기 최적화 확인
+
+**예상 소요 시간**: 1시간
+
+---
 
 ## 구현 순서
 
-1. **Week 1**: 다크/라이트 모드 (테마 전환 UI, 스타일 검증)
-2. **Week 2**: 로딩 상태 개선 (스켈레톤 컴포넌트 생성 및 적용)
-3. **Week 3**: 접근성 개선 (ARIA 속성, 키보드 네비게이션)
-4. **Week 4**: 에러 페이지 및 SEO (404, sitemap, robots.txt)
-5. **Week 5**: 성능 최적화 및 Lighthouse 측정
+1. **SEO 및 성능 최적화** (Week 1)
+   - 404 페이지 업데이트
+   - 동적 Sitemap 업데이트
+   - 성능 최적화 완료
+
+2. **접근성 기능 구현** (Week 2)
+   - 접근성 도구 모음 컴포넌트
+   - 화면 확대/축소 기능
+   - 음성 출력 기능
+   - 통합 및 테스트
+
+3. **디자인 최종 점검** (Week 3)
+   - 디자인 일관성 점검
+   - 접근성 테스트
+   - 성능 최종 테스트
+
+---
+
+## 주의사항
+
+### TourAPI 이미지 도메인
+
+- TourAPI 이미지 URL 구조를 먼저 확인해야 함
+- 실제 이미지 도메인은 API 응답에서 확인 후 `next.config.ts`에 추가
+- 여러 도메인이 있을 수 있으므로 패턴 매칭 고려
+
+### Sitemap 크기 제한
+
+- Sitemap은 최대 50,000 URLs 권장
+- 여행지가 많을 경우 Sitemap 인덱스 파일 고려
+- 또는 주요 여행지만 포함하는 전략 고려
+
+### 접근성 기능 브라우저 호환성
+
+- Web Speech API는 일부 브라우저에서 미지원 가능
+- 폴백 처리 필수
+- 화면 확대는 CSS `transform: scale()` 사용 권장 (더 넓은 호환성)
+
+### 성능 최적화
+
+- 이미지 최적화는 프로덕션 빌드에서만 적용됨
+- 개발 환경에서는 원본 이미지 사용 가능
+- 실제 성능 측정은 프로덕션 환경에서 진행
+
+---
 
 ## 완료 기준
 
-- [ ] 다크/라이트 모드 전환 정상 작동
-- [ ] 모든 주요 컴포넌트에 로딩 상태 적용
-- [ ] WCAG 2.1 AA 준수 (접근성 검사 통과)
-- [ ] 404 페이지 정상 작동
-- [ ] Sitemap 및 robots.txt 생성 완료
-- [ ] Lighthouse 점수 80+ 달성 (Performance 포함)
+Phase 4가 완료되려면 다음 조건을 모두 만족해야 합니다:
 
-## 참고 자료
+1. ✅ 404 페이지가 여행 테마로 업데이트됨
+2. ✅ 동적 Sitemap이 TourAPI를 사용하여 생성됨
+3. ✅ TourAPI 이미지 도메인이 `next.config.ts`에 추가됨
+4. ✅ 접근성 도구 모음이 구현되고 모든 페이지에서 사용 가능함
+5. ✅ 화면 확대/축소 기능이 정상 동작함
+6. ✅ 음성 출력 기능이 정상 동작함 (Web Speech API 지원 브라우저)
+7. ✅ 디자인 일관성이 확인됨
+8. ✅ 접근성 테스트 통과 (WCAG 2.1 AA)
+9. ✅ Lighthouse Performance 80+ 달성
 
-- [Next.js SEO 가이드](https://nextjs.org/docs/app/building-your-application/optimizing/metadata)
-- [WCAG 2.1 가이드](https://www.w3.org/WAI/WCAG21/quickref/)
-- [next-themes 문서](https://github.com/pacocoursey/next-themes)
-- [Lighthouse 성능 가이드](https://developer.chrome.com/docs/lighthouse/performance/)
+---
 
 ## 다음 단계
 
-Phase 5로 진행하여 배포 및 운영 환경 점검.
+Phase 4 완료 후:
+- Phase 5: 배포·운영·사업성 검증으로 진행
+- 또는 추가 UI/UX 개선 작업 진행
 
+---
+
+## 참고 문서
+
+- [접근성 기능 구현 계획서](./ACCESSIBILITY_FEATURES_PLAN.md)
+- [Lighthouse 측정 가이드](./LIGHTHOUSE_CHECKLIST.md)
+- [성능 최적화 가이드](./Design.md#9-성능-최적화)
+- [TourAPI 공식 문서](https://www.data.go.kr/tcs/dss/selectApiDataDetailView.do?publicDataPk=15128892)

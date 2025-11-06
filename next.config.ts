@@ -4,10 +4,15 @@ const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
       { hostname: "img.clerk.com" },
-      // 고캠핑 API 이미지 도메인
-      { hostname: "gocamping.or.kr" },
+      // 한국관광공사 TourAPI 이미지 도메인
+      { hostname: "tong.visitkorea.or.kr" }, // TourAPI 이미지 서버
+      { hostname: "api.visitkorea.or.kr" }, // TourAPI 이미지 서버 (대체)
+      { hostname: "**.visitkorea.or.kr" }, // 모든 visitkorea.or.kr 서브도메인
+      // 공공데이터 포털 이미지 도메인 (기존)
       { hostname: "**.go.kr" },
       { hostname: "**.data.go.kr" },
+      // 고캠핑 API 이미지 도메인 (호환성 유지)
+      { hostname: "gocamping.or.kr" },
     ],
     formats: ["image/avif", "image/webp"],
     minimumCacheTTL: 86400, // 24시간 캐시

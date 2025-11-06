@@ -202,7 +202,14 @@
 - [x] Lighthouse 점수 80+ 달성 준비 완료 (코드 레벨 최적화 완료, 실제 측정 필요)
 - [x] 전체 페이지 디자인 개선 (Design.md 원칙 반영)
 - [x] 네비게이션 구조 개선 (GNB, LNB, SNB, FNB)
-- [ ] 접근성 기능 구현 (화면 확대/축소, 음성 출력) - 계획서 작성 완료
+- [x] 접근성 기능 구현 (`components/accessibility/`)
+  - 접근성 도구 모음 컴포넌트 (`accessibility-toolbar.tsx`) - 플로팅 버튼, Dialog 패널
+  - 화면 확대/축소 기능 (`zoom-control.tsx`) - 100%, 125%, 150%, 200% 단계별 조절
+  - 음성 출력 기능 (`text-to-speech.tsx`) - 전체 페이지/선택 영역 읽기, 속도 조절
+  - RootLayout에 통합 완료
+  - 키보드 단축키 지원 (Ctrl + +, Ctrl + -, Ctrl + 0)
+  - localStorage를 통한 설정 저장
+  - 계획서: [ACCESSIBILITY_FEATURES_PLAN.md](./ACCESSIBILITY_FEATURES_PLAN.md)
 
 ### Phase 4 완료 상세
 
@@ -244,25 +251,26 @@
   - :focus-visible 전역 스타일 추가
   - .sr-only 유틸리티 클래스 정의
   - focus:not-sr-only 스타일 지원
-- [ ] 404 페이지 (`app/not-found.tsx`)
-  - 여행 테마 디자인 (MapPin 또는 Plane 아이콘)
-  - 명확한 에러 메시지 및 안내
-  - 홈으로 가기, 여행지 검색 링크 제공
-  - 접근성: 포커스 스타일, aria-label 적용
-- [ ] 동적 Sitemap 생성 (`app/sitemap.ts`)
-  - Next.js 15 MetadataRoute.Sitemap 활용
-  - TourAPI를 통한 여행지 목록 조회
-  - 각 여행지 상세페이지 URL 자동 생성
-  - changeFrequency 및 priority 설정
+- [x] 404 페이지 업데이트 (`app/not-found.tsx`)
+  - 여행 테마 디자인 (MapPin 아이콘)
+  - "캠핑장 검색" → "여행지 검색" 텍스트 변경
+  - 링크 URL 업데이트 완료
+  - 접근성: 포커스 스타일, aria-label 적용 유지
+- [x] 동적 Sitemap 업데이트 (`app/sitemap.ts`)
+  - TourAPI로 변경 완료
+  - `contentid` 필드 사용 (TourAPI)
+  - URL 경로 변경: `/campings/` → `/travels/`
+  - Sitemap URL 업데이트: `pitch-camping` → `pitch-travel`
 - [x] Robots.txt 생성 (`app/robots.ts`)
   - 모든 검색 엔진 허용 (User-agent: \*)
   - /api/, /admin/ 경로 차단
   - Sitemap URL 지정
-- [ ] 성능 최적화 (`next.config.ts`, `app/layout.tsx`, `app/page.tsx`)
-  - 이미지 최적화: WebP/AVIF 포맷 지원, 캐싱 설정, TourAPI 이미지 도메인 추가
-  - 폰트 최적화: display: swap 적용, 주요 폰트만 preload
-  - 번들 최적화: NaverMap 동적 import, 코드 스플리팅 설정
-  - 압축 및 보안 헤더 최적화 (compress: true, poweredByHeader: false)
+- [x] 성능 최적화 완료 (`next.config.ts`)
+  - TourAPI 이미지 도메인 추가 (tong.visitkorea.or.kr, api.visitkorea.or.kr 등)
+  - 이미지 최적화 확인: WebP/AVIF 포맷 지원, 캐싱 설정
+  - 폰트 최적화 확인: display: swap 적용, 주요 폰트만 preload (이미 완료)
+  - 번들 최적화 확인: NaverMap 동적 import, 코드 스플리팅 설정 (이미 완료)
+  - 압축 및 보안 헤더 최적화 확인 (compress: true, poweredByHeader: false) (이미 완료)
 - [x] Web Vitals 모니터링 (`components/web-vitals.tsx`)
   - LCP, CLS 측정 및 로깅
   - 성능 임계값 경고

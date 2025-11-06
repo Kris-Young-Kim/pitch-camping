@@ -7,6 +7,7 @@ import { ThemeProvider } from "next-themes";
 import { SyncUserProvider } from "@/components/providers/sync-user-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { WebVitals } from "@/components/web-vitals";
+import { AccessibilityToolbar } from "@/components/accessibility/accessibility-toolbar";
 import Navbar from "@/components/Navbar";
 import { FooterNav } from "@/components/navigation/footer-nav";
 import "./globals.css";
@@ -101,6 +102,7 @@ export default function RootLayout({
               <Navbar />
               <main id="main-content" className="min-h-[calc(100vh-4rem)]">{children}</main>
               <FooterNav />
+              <AccessibilityToolbar />
               <Toaster />
               <WebVitals />
             </SyncUserProvider>

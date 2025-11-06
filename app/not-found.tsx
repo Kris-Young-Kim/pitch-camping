@@ -7,19 +7,19 @@
  *
  * @dependencies
  * - components/ui/button.tsx: Button 컴포넌트
- * - lucide-react: Tent, Home, Search 아이콘
+ * - lucide-react: MapPin, Home, Search 아이콘
  */
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Tent, Home, Search } from "lucide-react";
+import { MapPin, Home, Search } from "lucide-react";
 
 export default function NotFound() {
   return (
     <main className="min-h-[calc(100vh-80px)] flex items-center justify-center px-4" id="main-content">
       <div className="text-center max-w-md">
         <div className="mb-8">
-          <Tent className="w-24 h-24 mx-auto text-gray-400 dark:text-gray-600 mb-4" aria-hidden="true" />
+          <MapPin className="w-24 h-24 mx-auto text-gray-400 dark:text-gray-600 mb-4" aria-hidden="true" />
           <h1 className="text-6xl font-bold text-gray-900 dark:text-white mb-2">404</h1>
           <h2 className="text-2xl font-semibold text-gray-700 dark:text-gray-300 mb-4">
             페이지를 찾을 수 없습니다
@@ -39,9 +39,9 @@ export default function NotFound() {
             </Link>
           </Button>
           <Button asChild variant="outline" className="focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
-            <Link href="/?keyword=" aria-label="캠핑장 검색 페이지로 이동">
+            <Link href="/" aria-label="여행지 검색 페이지로 이동">
               <Search className="w-4 h-4 mr-2" aria-hidden="true" />
-              캠핑장 검색
+              여행지 검색
             </Link>
           </Button>
         </div>
