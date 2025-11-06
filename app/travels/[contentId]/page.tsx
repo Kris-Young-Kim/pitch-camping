@@ -25,6 +25,7 @@ import { DetailGallery } from "@/components/travel-detail/detail-gallery";
 import { ShareButton } from "@/components/travel-detail/share-button";
 import { BookmarkButton } from "@/components/travel-detail/bookmark-button";
 import { ContactButton } from "@/components/travel-detail/contact-button";
+import { WeatherWidget } from "@/components/travel-detail/weather-widget";
 import { LocalNav } from "@/components/navigation/local-nav";
 import { SideNav } from "@/components/navigation/side-nav";
 import { trackView } from "@/lib/api/analytics";
@@ -380,6 +381,9 @@ export default async function TravelDetailPage({
 
           {/* 우측 컬럼 - 사이드바 (1/3) */}
           <div className="lg:col-span-1 space-y-6">
+            {/* 날씨 위젯 */}
+            <WeatherWidget travel={detail} />
+
             {/* SNB: 빠른 링크 */}
             <SideNav
               title="빠른 링크"
