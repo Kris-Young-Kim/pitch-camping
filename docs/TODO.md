@@ -124,12 +124,47 @@
 
 ## [Phase 3] 사업화·운영 확장
 
-- [ ] Supabase DB 마이그레이션, RLS 보안정책 설정, 데이터 품질 점검
-- [ ] 통계/랭킹/인기도·사용자 기록 저장 구조 추가
-- [ ] 리뷰·평점 MVP 설계(공공 API+자체 DB)
+- [x] Supabase DB 마이그레이션, RLS 보안정책 설정, 데이터 품질 점검
+- [x] 통계/랭킹/인기도·사용자 기록 저장 구조 추가
+- [x] 리뷰·평점 MVP 설계(공공 API+자체 DB)
 - [ ] 서비스 운영 KPI 대시보드 만들기
 - [ ] 클라우드 인프라/비용 모니터링·성능 최적화
-- [ ] API Rate Limit/품질 이슈 캐시·폴백 로직
+- [x] API Rate Limit/품질 이슈 캐시·폴백 로직
+
+### Phase 3 완료 상세
+
+- [x] 통계 테이블 생성 (`supabase/migrations/20251106140000_create_statistics_tables.sql`)
+  - camping_stats: 캠핑장별 통계 (조회수, 북마크 수, 공유 수)
+  - user_activity: 사용자 활동 기록 (조회, 북마크, 공유)
+  - 북마크 트리거로 bookmark_count 자동 업데이트
+- [x] RLS 보안 정책 설계 (`supabase/migrations/20251106140001_design_rls_policies.sql`)
+  - users, bookmarks, camping_stats, user_activity 테이블 RLS 정책 설계
+  - 프로덕션 배포 전 적용 준비 완료
+- [x] 조회수 추적 시스템 (`lib/api/analytics.ts`)
+  - trackView(): 캠핑장 상세페이지 조회수 증가
+  - trackActivity(): 사용자 활동 기록
+  - getCampingStats(): 통계 데이터 조회
+- [x] 인기도/랭킹 계산 시스템 (`lib/utils/ranking.ts`)
+  - calculatePopularityScore(): 인기도 점수 계산
+  - getPopularCampings(): 인기 캠핑장 목록 조회
+  - 지역별/타입별 필터링 준비
+- [x] 리뷰 테이블 생성 (`supabase/migrations/20251106140002_create_reviews_table.sql`)
+  - reviews: 리뷰 및 평점 (1-5점)
+  - review_helpful: 리뷰 도움됨 표시
+  - 평균 평점/리뷰 개수 조회 함수
+- [x] 리뷰 API 및 컴포넌트 (`lib/api/reviews.ts`, `components/camping-detail/review-section.tsx`)
+  - 리뷰 작성, 수정, 삭제
+  - 리뷰 목록 조회 (평점 분포 포함)
+  - 리뷰 도움됨 기능
+  - 상세페이지 리뷰 섹션 통합
+- [x] API Rate Limit 핸들러 (`lib/api/rate-limit-handler.ts`)
+  - Rate Limit 감지 (429 에러)
+  - Exponential backoff 재시도
+  - Rate Limit 정보 캐싱
+- [x] 폴백 로직 (`lib/api/fallback-handler.ts`)
+  - API 실패 시 캐시된 데이터 반환
+  - 오프라인 상태 감지
+  - 사용자 친화적 에러 메시지
 
 ---
 

@@ -26,6 +26,8 @@ import { campingApi, CampingApiClient } from "@/lib/api/camping-api";
 import { DetailGallery } from "@/components/camping-detail/detail-gallery";
 import { ShareButton } from "@/components/camping-detail/share-button";
 import { BookmarkButton } from "@/components/camping-detail/bookmark-button";
+import { ReviewSection } from "@/components/camping-detail/review-section";
+import { trackView } from "@/lib/api/analytics";
 import type { CampingSiteDetail } from "@/types/camping";
 import type { Metadata } from "next";
 
@@ -138,6 +140,11 @@ export default async function CampingDetailPage({
     notFound();
   }
 
+  // 조회수 추적 (비동기, 에러 발생해도 페이지 렌더링 계속)
+  trackView(contentId).catch((err) => {
+    console.error("[CampingDetailPage] 조회수 추적 오류:", err);
+  });
+
   return (
     <main className="min-h-[calc(100vh-80px)] py-8 px-4">
       <div className="max-w-5xl mx-auto">
@@ -229,6 +236,9 @@ export default async function CampingDetailPage({
             )}
           </div>
         </div>
+
+        {/* 리뷰 섹션 */}
+        <ReviewSection contentId={contentId} />
       </div>
     </main>
   );
