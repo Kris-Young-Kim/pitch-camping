@@ -26,7 +26,6 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { usePathname } from "next/navigation";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -58,7 +57,6 @@ interface FeedbackFormProps {
 }
 
 export function FeedbackForm({ defaultType, defaultPageUrl }: FeedbackFormProps) {
-  const pathname = usePathname();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const {
@@ -117,16 +115,6 @@ export function FeedbackForm({ defaultType, defaultPageUrl }: FeedbackFormProps)
       setIsSubmitting(false);
       console.groupEnd();
     }
-  };
-
-  const getTypeLabel = (type: string) => {
-    const labels: Record<string, string> = {
-      bug: "버그 리포트",
-      feature: "기능 제안",
-      improvement: "개선사항",
-      other: "기타",
-    };
-    return labels[type] || type;
   };
 
   return (

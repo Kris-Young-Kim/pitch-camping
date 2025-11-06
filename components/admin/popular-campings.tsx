@@ -7,7 +7,7 @@
  * @dependencies
  * - components/ui/card.tsx: Card 컴포넌트
  * - components/ui/table.tsx: Table 컴포넌트
- * - lib/utils/ranking.ts: calculatePopularityScore
+ * - lib/utils/popularity.ts: calculatePopularityScore
  */
 
 "use client";
@@ -21,7 +21,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { calculatePopularityScore } from "@/lib/utils/ranking";
+import { calculatePopularityScore } from "@/lib/utils/popularity";
 import Link from "next/link";
 
 interface PopularCamping {

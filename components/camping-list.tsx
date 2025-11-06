@@ -33,11 +33,10 @@ import { PAGINATION_DEFAULTS } from "@/constants/camping";
 interface CampingListProps {
   filter?: CampingFilter;
   onCampingClick?: (camping: CampingSite) => void;
-  selectedCampingId?: string;
   onCampingsChange?: (campings: CampingSite[]) => void;
 }
 
-export function CampingList({ filter, onCampingClick, selectedCampingId, onCampingsChange }: CampingListProps) {
+export function CampingList({ filter, onCampingClick, onCampingsChange }: CampingListProps) {
   const searchParams = useSearchParams();
   const [campings, setCampings] = useState<CampingSite[]>([]);
   const [loading, setLoading] = useState(true);
@@ -96,7 +95,7 @@ export function CampingList({ filter, onCampingClick, selectedCampingId, onCampi
     };
 
     fetchCampings();
-  }, [filter, page]);
+  }, [filter, page, onCampingsChange]);
 
   // 페이지 변경 핸들러
   const handlePageChange = (newPage: number) => {

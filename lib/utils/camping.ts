@@ -36,8 +36,8 @@ export function convertKATECToWGS84(
   const SLAT2 = 60.0; // 투영 위도2(degree)
   const OLON = 126.0; // 기준점 경도(degree)
   const OLAT = 38.0; // 기준점 위도(degree)
-  const XO = 43; // 기준점 X좌표(GRID)
-  const YO = 136; // 기준점 Y좌표(GRID)
+  // const XO = 43; // 기준점 X좌표(GRID) - 현재 사용 안 함
+  // const YO = 136; // 기준점 Y좌표(GRID) - 현재 사용 안 함
 
   const DEGRAD = Math.PI / 180.0;
   const RADDEG = 180.0 / Math.PI;
@@ -46,7 +46,7 @@ export function convertKATECToWGS84(
   const slat1 = SLAT1 * DEGRAD;
   const slat2 = SLAT2 * DEGRAD;
   const olon = OLON * DEGRAD;
-  const olat = OLAT * DEGRAD;
+  // const olat = OLAT * DEGRAD; // 현재 사용되지 않음 (알고리즘 참고용)
 
   let sn =
     Math.tan(Math.PI * 0.25 + slat2 * 0.5) /
@@ -54,8 +54,9 @@ export function convertKATECToWGS84(
   sn = Math.log(Math.cos(slat1) / Math.cos(slat2)) / Math.log(sn);
   let sf = Math.tan(Math.PI * 0.25 + slat1 * 0.5);
   sf = (Math.pow(sf, sn) * Math.cos(slat1)) / sn;
-  let ro = Math.tan(Math.PI * 0.25 + olat * 0.5);
-  ro = (re * sf) / Math.pow(ro, sn);
+  // ro 계산은 사용되지 않지만 알고리즘의 일부이므로 유지
+  // const _ro = Math.tan(Math.PI * 0.25 + olat * 0.5);
+  // const _roValue = (re * sf) / Math.pow(_ro, sn);
 
   let ra = Math.tan(Math.PI * 0.25 + katecY * DEGRAD * 0.5);
   ra = (re * sf) / Math.pow(ra, sn);

@@ -120,7 +120,7 @@ export function trackDataValidationError() {
  */
 export function calculateMetrics(): ServiceMetrics {
   const totalRequests = metricsData.bookmarkAttempts + metricsData.urlCopyAttempts + metricsData.apiRequests;
-  const totalSuccesses = metricsData.bookmarkSuccesses + metricsData.urlCopySuccesses + metricsData.apiSuccesses;
+  // const totalSuccesses = metricsData.bookmarkSuccesses + metricsData.urlCopySuccesses + metricsData.apiSuccesses; // 향후 사용 예정
 
   const bookmarkSuccessRate =
     metricsData.bookmarkAttempts > 0

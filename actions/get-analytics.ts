@@ -80,7 +80,7 @@ export async function getAnalyticsMetrics(): Promise<AnalyticsMetrics | null> {
       totalApiRequests: 0, // 추적 필요
     };
 
-    logInfo("[Analytics] 메트릭 조회 완료", metrics);
+    logInfo("[Analytics] 메트릭 조회 완료", metrics as unknown as Record<string, unknown>);
     return metrics;
   } catch (error) {
     logError("[Analytics] 메트릭 조회 오류", error);

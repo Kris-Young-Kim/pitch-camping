@@ -18,8 +18,8 @@
 
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
+import { useEffect, useRef, useState, useCallback } from "react";
+import { MapPin } from "lucide-react";
 import { MapSkeleton } from "@/components/loading/map-skeleton";
 import type { CampingSite } from "@/types/camping";
 import { convertKATECToWGS84 } from "@/lib/utils/camping";
@@ -54,95 +54,8 @@ export function NaverMap({
   const [isLoaded, setIsLoaded] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // 네이버 지도 스크립트 로드
-  useEffect(() => {
-    console.group("[NaverMap] 네이버 지도 초기화");
-    console.log("캠핑장 개수:", campings.length);
-
-    const clientId = process.env.NEXT_PUBLIC_NAVER_MAP_CLIENT_ID;
-
-    if (!clientId) {
-      console.error("[NaverMap] 네이버 지도 Client ID가 설정되지 않았습니다.");
-      setError("네이버 지도 서비스를 사용할 수 없습니다.");
-      return;
-    }
-
-    // 스크립트가 이미 로드되어 있는지 확인
-    if (window.naver && window.naver.maps) {
-      console.log("[NaverMap] 네이버 지도 API 이미 로드됨");
-      initializeMap();
-      return;
-    }
-
-    // 스크립트 로드
-    const script = document.createElement("script");
-    script.src = `https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=${clientId}`;
-    script.async = true;
-    script.onload = () => {
-      console.log("[NaverMap] 네이버 지도 API 로드 완료");
-      initializeMap();
-    };
-    script.onerror = () => {
-      console.error("[NaverMap] 네이버 지도 API 로드 실패");
-      setError("네이버 지도를 불러오는데 실패했습니다.");
-    };
-
-    document.head.appendChild(script);
-
-    return () => {
-      // 클린업: 마커 및 인포윈도우 제거
-      if (markersRef.current.length > 0) {
-        markersRef.current.forEach((marker) => marker.setMap(null));
-        markersRef.current = [];
-      }
-      if (infoWindowsRef.current.length > 0) {
-        infoWindowsRef.current.forEach((infoWindow) => infoWindow.close());
-        infoWindowsRef.current = [];
-      }
-    };
-  }, []);
-
-  // 지도 초기화
-  const initializeMap = () => {
-    if (!mapRef.current || !window.naver?.maps) {
-      console.error("[NaverMap] 지도 초기화 실패: 요소 또는 API가 없음");
-      return;
-    }
-
-    try {
-      console.log("[NaverMap] 지도 초기화 시작");
-
-      // 기본 중심 좌표 (한국 중심)
-      const defaultCenter = center
-        ? new window.naver.maps.LatLng(center.lat, center.lng)
-        : new window.naver.maps.LatLng(37.5665, 126.978); // 서울 좌표
-
-      // 지도 생성
-      const mapOptions = {
-        center: defaultCenter,
-        zoom: zoom,
-      };
-
-      mapInstanceRef.current = new window.naver.maps.Map(
-        mapRef.current,
-        mapOptions
-      );
-
-      console.log("[NaverMap] 지도 생성 완료");
-      setIsLoaded(true);
-
-      // 마커 표시
-      if (campings.length > 0) {
-        addMarkers();
-      }
-    } catch (err) {
-      console.error("[NaverMap] 지도 초기화 오류:", err);
-      setError("지도를 초기화하는데 실패했습니다.");
-    }
-  };
-
-  // 마커 추가
-  const addMarkers = () => {
+  // 마커 추가 함수 (initializeMap보다 먼저 정의)
+  const addMarkers = useCallback(() => {
     if (!mapInstanceRef.current || !window.naver?.maps) {
       return;
     }
@@ -224,7 +137,94 @@ export function NaverMap({
     });
 
     console.log("[NaverMap] 마커 추가 완료:", markersRef.current.length);
-  };
+  }, [campings, onMarkerClick]);
+
+  // 지도 초기화 함수
+  const initializeMap = useCallback(() => {
+    if (!mapRef.current || !window.naver?.maps) {
+      console.error("[NaverMap] 지도 초기화 실패: 요소 또는 API가 없음");
+      return;
+    }
+
+    try {
+      console.log("[NaverMap] 지도 초기화 시작");
+
+      // 기본 중심 좌표 (한국 중심)
+      const defaultCenter = center
+        ? new window.naver.maps.LatLng(center.lat, center.lng)
+        : new window.naver.maps.LatLng(37.5665, 126.978); // 서울 좌표
+
+      // 지도 생성
+      const mapOptions = {
+        center: defaultCenter,
+        zoom: zoom,
+      };
+
+      mapInstanceRef.current = new window.naver.maps.Map(
+        mapRef.current,
+        mapOptions
+      );
+
+      console.log("[NaverMap] 지도 생성 완료");
+      setIsLoaded(true);
+
+      // 마커 표시
+      if (campings.length > 0) {
+        addMarkers();
+      }
+    } catch (err) {
+      console.error("[NaverMap] 지도 초기화 오류:", err);
+      setError("지도를 초기화하는데 실패했습니다.");
+    }
+  }, [center, zoom, campings.length, addMarkers]);
+
+  // 네이버 지도 스크립트 로드
+  useEffect(() => {
+    console.group("[NaverMap] 네이버 지도 초기화");
+    console.log("캠핑장 개수:", campings.length);
+
+    const clientId = process.env.NEXT_PUBLIC_NAVER_MAP_CLIENT_ID;
+
+    if (!clientId) {
+      console.error("[NaverMap] 네이버 지도 Client ID가 설정되지 않았습니다.");
+      setError("네이버 지도 서비스를 사용할 수 없습니다.");
+      return;
+    }
+
+    // 스크립트가 이미 로드되어 있는지 확인
+    if (window.naver && window.naver.maps) {
+      console.log("[NaverMap] 네이버 지도 API 이미 로드됨");
+      initializeMap();
+      return;
+    }
+
+    // 스크립트 로드
+    const script = document.createElement("script");
+    script.src = `https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=${clientId}`;
+    script.async = true;
+    script.onload = () => {
+      console.log("[NaverMap] 네이버 지도 API 로드 완료");
+      initializeMap();
+    };
+    script.onerror = () => {
+      console.error("[NaverMap] 네이버 지도 API 로드 실패");
+      setError("네이버 지도를 불러오는데 실패했습니다.");
+    };
+
+    document.head.appendChild(script);
+
+    return () => {
+      // 클린업: 마커 및 인포윈도우 제거
+      if (markersRef.current.length > 0) {
+        markersRef.current.forEach((marker) => marker.setMap(null));
+        markersRef.current = [];
+      }
+      if (infoWindowsRef.current.length > 0) {
+        infoWindowsRef.current.forEach((infoWindow) => infoWindow.close());
+        infoWindowsRef.current = [];
+      }
+    };
+  }, [initializeMap]);
 
   // 선택된 캠핑장으로 지도 이동
   useEffect(() => {
@@ -283,7 +283,7 @@ export function NaverMap({
         mapInstanceRef.current.fitBounds(bounds);
       }
     }
-  }, [campings]);
+  }, [campings, isLoaded, addMarkers]);
 
   return (
     <div className={`relative w-full h-full min-h-[400px] md:min-h-[600px] ${className}`} role="application" aria-label="네이버 지도">

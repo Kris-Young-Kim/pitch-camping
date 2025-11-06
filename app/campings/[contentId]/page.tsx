@@ -21,7 +21,6 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
 import { campingApi, CampingApiClient } from "@/lib/api/camping-api";
 import { DetailGallery } from "@/components/camping-detail/detail-gallery";
 import { ShareButton } from "@/components/camping-detail/share-button";

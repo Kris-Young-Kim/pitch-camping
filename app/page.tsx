@@ -28,13 +28,12 @@ import { CampingFilters } from "@/components/camping-filters";
 import { CampingList } from "@/components/camping-list";
 import { CampingSearch } from "@/components/camping-search";
 import { MapSkeleton } from "@/components/loading/map-skeleton";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Map, List } from "lucide-react";
 import type { CampingFilter, CampingSite } from "@/types/camping";
 import {
   REGIONS,
   CAMPING_TYPES,
-  SORT_OPTIONS,
 } from "@/constants/camping";
 
 // NaverMap 동적 import (SSR 비활성화, 번들 분리)
@@ -166,7 +165,6 @@ function HomeContent() {
                 <CampingList 
                   filter={filter}
                   onCampingClick={handleCampingClick}
-                  selectedCampingId={selectedCampingId}
                   onCampingsChange={handleCampingListUpdate}
                 />
               </div>
@@ -188,7 +186,6 @@ function HomeContent() {
               <CampingList 
                 filter={filter}
                 onCampingClick={handleCampingClick}
-                selectedCampingId={selectedCampingId}
                 onCampingsChange={handleCampingListUpdate}
               />
             ) : (

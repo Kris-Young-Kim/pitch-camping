@@ -42,7 +42,7 @@ export function CampingCard({ camping, onCardClick }: CampingCardProps) {
   return (
     <Link
       href={`/campings/${camping.contentId}`}
-      onClick={(e) => {
+      onClick={() => {
         handleCardClick();
         // 지도 연동을 위해 기본 동작은 유지하되, 호버 시에는 지도로만 이동
       }}

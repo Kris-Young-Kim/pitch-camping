@@ -22,7 +22,7 @@ interface LogContext {
 }
 
 const isDevelopment = process.env.NODE_ENV === "development";
-const isProduction = process.env.NODE_ENV === "production";
+// const isProduction = process.env.NODE_ENV === "production"; // 향후 사용 예정
 
 /**
  * 로그 메타데이터 인터페이스

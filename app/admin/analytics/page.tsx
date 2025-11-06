@@ -30,7 +30,7 @@ async function checkAdminAccess(): Promise<boolean> {
     if (adminUserIds.includes(userId)) return true;
     if (orgRole === "org:admin") return true;
     return false;
-  } catch (error) {
+  } catch {
     return false;
   }
 }

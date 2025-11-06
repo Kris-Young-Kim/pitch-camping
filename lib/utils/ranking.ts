@@ -11,13 +11,13 @@
  *
  * @dependencies
  * - lib/supabase/server.ts: createClerkSupabaseClient
- * - types/camping.ts: CampingSite 타입
+ * - lib/utils/popularity.ts: calculatePopularityScore
  */
 
 "use server";
 
 import { createClerkSupabaseClient } from "@/lib/supabase/server";
-import type { CampingSite } from "@/types/camping";
+import { calculatePopularityScore } from "@/lib/utils/popularity";
 
 export interface CampingRanking {
   contentId: string;
@@ -29,35 +29,6 @@ export interface CampingRanking {
 }
 
 /**
- * 인기도 점수 계산
- * @param viewCount 조회수
- * @param bookmarkCount 북마크 수
- * @param shareCount 공유 수
- * @returns 인기도 점수 (0-100)
- */
-export function calculatePopularityScore(
-  viewCount: number,
-  bookmarkCount: number,
-  shareCount: number
-): number {
-  // 가중치: 조회수 1점, 북마크 10점, 공유 5점
-  const weights = {
-    view: 1,
-    bookmark: 10,
-    share: 5,
-  };
-
-  const score =
-    viewCount * weights.view +
-    bookmarkCount * weights.bookmark +
-    shareCount * weights.share;
-
-  // 최대 점수를 100으로 정규화 (임의의 최대값 설정)
-  const maxScore = 10000; // 조정 가능
-  return Math.min(100, Math.round((score / maxScore) * 100));
-}
-
-/**
  * 인기 캠핑장 목록 조회
  * @param limit 조회할 개수 (기본값: 10)
  * @param region 지역 필터 (선택적)
@@ -65,15 +36,17 @@ export function calculatePopularityScore(
  */
 export async function getPopularCampings(
   limit: number = 10,
-  region?: string
+  region?: string,
 ): Promise<CampingRanking[]> {
-  console.group(`[Ranking] 인기 캠핑장 조회: limit=${limit}, region=${region || "전체"}`);
+  console.group(
+    `[Ranking] 인기 캠핑장 조회: limit=${limit}, region=${region || "전체"}`,
+  );
 
   try {
     const supabase = await createClerkSupabaseClient();
 
     // 통계 데이터 조회
-    let query = supabase
+    const query = supabase
       .from("camping_stats")
       .select("*")
       .order("bookmark_count", { ascending: false })
@@ -99,7 +72,7 @@ export async function getPopularCampings(
       popularityScore: calculatePopularityScore(
         stat.view_count || 0,
         stat.bookmark_count || 0,
-        stat.share_count || 0
+        stat.share_count || 0,
       ),
       viewCount: stat.view_count || 0,
       bookmarkCount: stat.bookmark_count || 0,
@@ -127,7 +100,7 @@ export async function getPopularCampings(
  */
 export async function getPopularCampingsByRegion(
   region: string,
-  limit: number = 10
+  limit: number = 10,
 ): Promise<CampingRanking[]> {
   console.log(`[Ranking] 지역별 인기 캠핑장 조회: ${region}`);
 
@@ -145,7 +118,7 @@ export async function getPopularCampingsByRegion(
  */
 export async function getPopularCampingsByType(
   campingType: string,
-  limit: number = 10
+  limit: number = 10,
 ): Promise<CampingRanking[]> {
   console.log(`[Ranking] 타입별 인기 캠핑장 조회: ${campingType}`);
 
@@ -154,4 +127,3 @@ export async function getPopularCampingsByType(
   // 현재는 전체 인기 캠핑장을 반환
   return getPopularCampings(limit);
 }
-

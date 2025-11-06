@@ -29,7 +29,6 @@ import {
 } from "@/lib/api/safety-guidelines";
 import { SafetyVideo } from "@/components/safety/safety-video";
 import { SafetyCard } from "@/components/safety/safety-card";
-import type { SafetyGuideline } from "@/lib/api/safety-guidelines";
 
 interface SafetyDetailPageProps {
   params: Promise<{ id: string }>;

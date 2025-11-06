@@ -9,6 +9,7 @@
  * - Next.js Image 컴포넌트
  */
 
+import Image from "next/image";
 import { Play, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -71,10 +72,12 @@ export function SafetyVideo({ videoUrl, videoType, title, thumbnailUrl }: Safety
       <CardContent>
         <div className="aspect-video w-full overflow-hidden rounded-lg bg-gray-100 dark:bg-gray-800 relative">
           {thumbnailUrl ? (
-            <img
+            <Image
               src={thumbnailUrl}
               alt={title || "동영상 썸네일"}
-              className="w-full h-full object-cover"
+              fill
+              className="object-cover"
+              sizes="(max-width: 768px) 100vw, 800px"
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center">

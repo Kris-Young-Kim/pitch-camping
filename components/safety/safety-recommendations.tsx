@@ -26,6 +26,8 @@ interface SafetyRecommendationsProps {
 }
 
 export async function SafetyRecommendations({ campingType }: SafetyRecommendationsProps) {
+  // campingType은 향후 활용 예정이므로 현재는 사용하지 않음
+  void campingType;
   // 현재 계절 기반 안전 수칙 추천
   const recommendedGuidelines = await getRecommendedSafetyGuidelines(3);
 

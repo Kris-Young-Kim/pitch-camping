@@ -142,7 +142,7 @@
   }
   
   .sr-only:focus,
-  .sr-only.focus:not-sr-only {
+  .sr-only.focus:not(.sr-only) {
     position: static;
     width: auto;
     height: auto;

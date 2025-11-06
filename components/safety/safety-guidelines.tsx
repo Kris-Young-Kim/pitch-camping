@@ -19,7 +19,7 @@
 
 import { useState, useEffect } from "react";
 import { SafetyCard } from "./safety-card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 import type { SafetyGuideline } from "@/lib/api/safety-guidelines";
@@ -64,7 +64,7 @@ export function SafetyGuidelines({
   const [selectedSeason, setSelectedSeason] = useState<
     "spring" | "summer" | "autumn" | "winter" | "all"
   >(defaultSeason || "all");
-  const [selectedTopic, setSelectedTopic] = useState<string>(defaultTopic || "all");
+  const [selectedTopic] = useState<string>(defaultTopic || "all");
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 

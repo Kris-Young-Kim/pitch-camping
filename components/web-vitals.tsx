@@ -52,7 +52,7 @@ export function WebVitals() {
 
     try {
       observer.observe({ entryTypes: ["largest-contentful-paint"] });
-    } catch (e) {
+    } catch {
       // 브라우저가 지원하지 않는 경우 무시
     }
 
@@ -69,7 +69,7 @@ export function WebVitals() {
 
     try {
       clsObserver.observe({ entryTypes: ["layout-shift"] });
-    } catch (e) {
+    } catch {
       // 브라우저가 지원하지 않는 경우 무시
     }
 
