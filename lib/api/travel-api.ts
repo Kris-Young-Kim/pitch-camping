@@ -120,8 +120,26 @@ export class TravelApiClient {
 
       if (!response.ok) {
         trackApiRequest(false, responseTime); // 실패 추적
+        
+        // 응답 본문을 읽어서 TourAPI 오류 메시지 확인 시도
+        let errorDetail = "";
+        try {
+          const errorData = await response.json();
+          if (errorData.response?.header?.resultCode) {
+            errorDetail = ` (TourAPI ${errorData.response.header.resultCode}: ${errorData.response.header.resultMsg || "알 수 없는 오류"})`;
+          }
+        } catch {
+          // JSON 파싱 실패 시 무시
+        }
+        
+        logError(
+          `[TravelApiClient] HTTP ${response.status} ${response.statusText}${errorDetail}`,
+          new Error(`API 요청 실패: ${response.status} ${response.statusText}`),
+          { endpoint, params, status: response.status, statusText: response.statusText }
+        );
+        
         throw new Error(
-          `API 요청 실패: ${response.status} ${response.statusText}`
+          `API 요청 실패: ${response.status} ${response.statusText}${errorDetail}`
         );
       }
 

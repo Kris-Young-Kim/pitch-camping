@@ -47,6 +47,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }
 
   try {
+    // 빌드 시점 체크: 빌드 중에는 TourAPI 호출을 건너뛰고 정적 페이지만 반환
+    const isBuildTime = process.env.NEXT_PHASE === "phase-production-build";
+    if (isBuildTime) {
+      console.log("[Sitemap] 빌드 시점이므로 정적 페이지만 포함합니다.");
+      return staticPages;
+    }
+
     // 여행지 목록 조회 (최대 1000개, 실제로는 더 많은 페이지가 있을 수 있음)
     // TourAPI는 페이지네이션을 지원하므로 여러 페이지를 조회할 수 있음
     const response = await travelApi.getTravelList({
@@ -54,9 +61,24 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       numOfRows: 1000,
     });
 
+    // TourAPI 응답 검증
+    if (response.response?.header?.resultCode !== "0000") {
+      const resultCode = response.response?.header?.resultCode || "UNKNOWN";
+      const resultMsg = response.response?.header?.resultMsg || "알 수 없는 오류";
+      console.warn(
+        `[Sitemap] TourAPI 오류 (${resultCode}): ${resultMsg}. 정적 페이지만 포함합니다.`
+      );
+      return staticPages;
+    }
+
     const items = normalizeTravelItems(
       response.response?.body?.items?.item
     );
+
+    if (items.length === 0) {
+      console.warn("[Sitemap] 여행지 데이터가 없습니다. 정적 페이지만 포함합니다.");
+      return staticPages;
+    }
 
     // 여행지 상세페이지
     const travelPages: MetadataRoute.Sitemap = items.map((travel) => ({
@@ -70,7 +92,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
     return [...staticPages, ...travelPages];
   } catch (error) {
-    console.error("[Sitemap] 생성 오류:", error);
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    console.error("[Sitemap] 생성 오류:", errorMessage);
     // 에러 발생 시 최소한 정적 페이지만 반환
     return staticPages;
   }
