@@ -26,9 +26,7 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import type { TravelSiteDetail, TravelImage } from "@/types/travel";
-import { travelApi } from "@/lib/api/travel-api";
 import { getImageUrl } from "@/lib/utils/travel";
-import { TravelApiClient } from "@/lib/api/travel-api";
 
 interface DetailGalleryProps {
   travel: TravelSiteDetail;
@@ -55,11 +53,17 @@ export function DetailGallery({ travel }: DetailGalleryProps) {
           imageList.push(travel.firstimage);
         }
 
-        // TourAPI 이미지 목록 조회
-        const response = await travelApi.getTravelImages(travel.contentid);
-        const imageItems = TravelApiClient.normalizeItems<TravelImage>(
-          response.response?.body?.items?.item
-        );
+        // TourAPI 이미지 목록 조회 (API Route를 통해)
+        const response = await fetch(`/api/travels/${travel.contentid}/images`);
+        if (!response.ok) {
+          throw new Error("이미지 목록 조회 실패");
+        }
+        const data = await response.json();
+        const imageItems: TravelImage[] = Array.isArray(data.response?.body?.items?.item)
+          ? data.response.body.items.item
+          : data.response?.body?.items?.item
+          ? [data.response.body.items.item]
+          : [];
 
         // 이미지 URL 추가 (중복 제거)
         imageItems.forEach((item) => {

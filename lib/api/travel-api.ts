@@ -46,9 +46,10 @@ export class TravelApiClient {
       process.env.NEXT_PUBLIC_TOUR_API_BASE_URL ||
       "http://apis.data.go.kr/B551011/KorService1";
 
-    // 빌드 시점에는 조용히 처리 (환경 변수가 없을 수 있음)
+    // 빌드 시점이나 클라이언트 사이드에서는 조용히 처리
     const isBuildTime = process.env.NEXT_PHASE === "phase-production-build";
-    if (!this.serviceKey && !isBuildTime) {
+    const isClientSide = typeof window !== "undefined";
+    if (!this.serviceKey && !isBuildTime && !isClientSide) {
       logError("[TravelApiClient] API 키가 설정되지 않았습니다.");
     }
   }
@@ -328,6 +329,25 @@ export class TravelApiClient {
 
 /**
  * 싱글톤 인스턴스 생성 및 export
+ * 서버 사이드에서만 인스턴스화되도록 lazy initialization 사용
  */
-export const travelApi = new TravelApiClient();
+let travelApiInstance: TravelApiClient | null = null;
+
+export const travelApi = (() => {
+  // 서버 사이드에서만 인스턴스 생성
+  if (typeof window === "undefined") {
+    if (!travelApiInstance) {
+      travelApiInstance = new TravelApiClient();
+    }
+    return travelApiInstance;
+  }
+  // 클라이언트 사이드에서는 더미 객체 반환 (실제로는 사용되지 않음)
+  // 클라이언트는 API Route를 통해 호출해야 함
+  return {
+    getTravelList: () => Promise.reject(new Error("클라이언트에서는 API Route를 사용하세요")),
+    getTravelDetail: () => Promise.reject(new Error("클라이언트에서는 API Route를 사용하세요")),
+    searchTravel: () => Promise.reject(new Error("클라이언트에서는 API Route를 사용하세요")),
+    getTravelImages: () => Promise.reject(new Error("클라이언트에서는 API Route를 사용하세요")),
+  } as TravelApiClient;
+})();
 

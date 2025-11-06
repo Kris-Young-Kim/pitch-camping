@@ -66,10 +66,10 @@ export function GlobalNav() {
           <div className="flex items-center gap-6 lg:gap-8">
             <Link
               href="/"
-              className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white hover:text-green-600 dark:hover:text-green-400 transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 rounded-md"
-              aria-label="Pitch Camping 홈으로 이동"
+              className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded-md"
+              aria-label="Pitch Travel 홈으로 이동"
             >
-              Pitch Camping
+              Pitch Travel
             </Link>
 
             {/* 데스크톱 메뉴 */}

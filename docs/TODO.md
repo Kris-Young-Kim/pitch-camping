@@ -529,25 +529,26 @@
   - 홈페이지 Hero 섹션 추가 (`app/page.tsx`)
     - 그라데이션 배경, 대형 제목, 현대적인 검색창
     - Design.md 원칙 반영 (모바일 퍼스트, 미니멀리즘, 비주얼 중심)
-  - 캠핑장 카드 디자인 개선 (`components/camping-card.tsx`)
+  - 여행지 카드 디자인 개선 (`components/travel-card.tsx`)
     - 16:9 이미지 비율, 호버 시 줌 효과
-    - 시설 뱃지 스타일 개선 (컬러 아이콘, rounded-full)
+    - 여행지 타입 뱃지 스타일 개선 (컬러 아이콘, rounded-full)
     - 그라데이션 오버레이 효과
-  - 필터 컴포넌트 디자인 개선 (`components/camping-filters.tsx`)
-    - 아이콘 배경, 더 큰 입력 필드
-    - 활성 필터 뱃지 스타일 개선
-  - 상세페이지 디자인 개선 (`app/campings/[contentId]/page.tsx`)
+  - 필터 컴포넌트 디자인 개선 (`components/travel-filters.tsx`)
+    - 아이콘 배경, 더 큰 입력 필드 (h-11)
+    - 활성 필터 뱃지 스타일 개선 (블루 테마)
+  - 상세페이지 디자인 개선 (`app/travels/[contentId]/page.tsx`)
     - 2/3 + 1/3 그리드 레이아웃
-    - 예약 버튼 sticky 위치
+    - 예약/문의 버튼 sticky 위치
     - 정보 구조 개선 (아이콘과 함께 표시)
-  - Navbar 개선 (`components/Navbar.tsx`, `components/navigation/global-nav.tsx`)
+  - Navbar 개선 (`components/navigation/global-nav.tsx`)
     - backdrop blur 효과
     - 테마 토글 추가
     - 반응형 개선
+    - "Pitch Travel" 브랜드명 적용
   - 전역 스타일 개선 (`app/globals.css`)
-    - 그린 테마 적용 (#22C55E)
+    - 블루 테마 적용 (#3B82F6)
     - 포커스 스타일 개선
-    - 타이포그래피 설정
+    - 타이포그래피 설정 (font-smoothing, line-height, heading 스타일)
 - [x] 네비게이션 구조 개선 (GNB, LNB, SNB, FNB)
   - GlobalNav 컴포넌트 생성 (`components/navigation/global-nav.tsx`)
     - 메인 메뉴 (홈, 안전 수칙, 피드백)

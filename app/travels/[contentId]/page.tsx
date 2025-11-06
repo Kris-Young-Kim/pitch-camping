@@ -20,7 +20,7 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { travelApi } from "@/lib/api/travel-api";
-import { TravelApiClient } from "@/lib/api/travel-api";
+import { normalizeTravelItems } from "@/lib/utils/travel";
 import { DetailGallery } from "@/components/travel-detail/detail-gallery";
 import { ShareButton } from "@/components/travel-detail/share-button";
 import { BookmarkButton } from "@/components/travel-detail/bookmark-button";
@@ -50,7 +50,7 @@ export async function generateMetadata({
   try {
     console.log("[TravelDetailPage] 메타데이터 생성 시작:", contentId);
     const response = await travelApi.getTravelDetail(contentId);
-    const items = TravelApiClient.normalizeItems(
+    const items = normalizeTravelItems(
       response.response?.body?.items?.item
     ) as TravelSiteDetail[];
     const detail = items[0];
@@ -121,7 +121,7 @@ export default async function TravelDetailPage({
     const commonResponse = await travelApi.getTravelDetail(contentId);
     console.log("[TravelDetailPage] 공통정보 API 응답:", commonResponse);
 
-    const commonItems = TravelApiClient.normalizeItems(
+    const commonItems = normalizeTravelItems(
       commonResponse.response?.body?.items?.item
     ) as TravelSiteDetail[];
 
@@ -143,7 +143,7 @@ export default async function TravelDetailPage({
             contentId,
             detail.contenttypeid
           );
-          const introItems = TravelApiClient.normalizeItems(
+          const introItems = normalizeTravelItems(
             introResponse.response?.body?.items?.item
           ) as TravelSiteDetail[];
 

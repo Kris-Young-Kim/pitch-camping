@@ -6,7 +6,6 @@
  */
 
 import type { TravelSite } from "@/types/travel";
-import { TravelApiClient } from "@/lib/api/travel-api";
 
 /**
  * 좌표 변환 (필요 시)
@@ -136,7 +135,10 @@ export function getTravelTypeName(contentTypeId?: string): string {
 export function normalizeTravelItems(
   items: TravelSite | TravelSite[] | undefined
 ): TravelSite[] {
-  return TravelApiClient.normalizeItems(items);
+  if (!items) {
+    return [];
+  }
+  return Array.isArray(items) ? items : [items];
 }
 
 /**
