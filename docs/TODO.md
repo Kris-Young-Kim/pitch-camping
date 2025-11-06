@@ -197,6 +197,9 @@
 - [x] 페이지 404/오프라인 안내·재시도 UX
 - [x] SEO: sitemap, robots.txt, 동적 메타태그 구성
 - [x] Lighthouse 점수 80+ 달성 준비 완료 (코드 레벨 최적화 완료, 실제 측정 필요)
+- [x] 전체 페이지 디자인 개선 (Design.md 원칙 반영)
+- [x] 네비게이션 구조 개선 (GNB, LNB, SNB, FNB)
+- [ ] 접근성 기능 구현 (화면 확대/축소, 음성 출력) - 계획서 작성 완료
 
 ### Phase 4 완료 상세
 
@@ -265,6 +268,36 @@
   - 측정 방법 안내
   - 최적화 체크리스트
   - 추가 최적화 권장사항
+- [x] 전체 페이지 디자인 개선
+  - 홈페이지 Hero 섹션 추가 (그라데이션 배경, 대형 제목, 현대적인 검색창)
+  - 캠핑장 카드 디자인 개선 (16:9 이미지 비율, 호버 효과, 시설 뱃지 스타일)
+  - 필터 컴포넌트 디자인 개선 (아이콘 배경, 더 큰 입력 필드, 활성 필터 뱃지)
+  - 상세페이지 디자인 개선 (2/3 + 1/3 그리드 레이아웃, 예약 버튼 sticky)
+  - Navbar 개선 (backdrop blur, 테마 토글 추가, 반응형)
+  - 전역 스타일 개선 (그린 테마, 포커스 스타일, 타이포그래피)
+- [x] 네비게이션 구조 개선 (GNB, LNB, SNB, FNB)
+  - GlobalNav 컴포넌트 생성 (`components/navigation/global-nav.tsx`)
+    - 메인 메뉴 (홈, 안전 수칙, 피드백)
+    - 모바일 햄버거 메뉴
+    - 접근성 향상 (ARIA, 키보드 네비게이션)
+  - LocalNav 컴포넌트 생성 (`components/navigation/local-nav.tsx`)
+    - 페이지별 탭 네비게이션
+    - 브레드크럼 네비게이션
+    - 홈페이지: 모바일 뷰 모드 전환 탭
+    - 상세페이지: 브레드크럼 네비게이션
+  - SideNav 컴포넌트 생성 (`components/navigation/side-nav.tsx`)
+    - 사이드바 형태의 네비게이션
+    - 상세페이지: 빠른 링크 메뉴
+  - FooterNav 컴포넌트 생성 (`components/navigation/footer-nav.tsx`)
+    - 주요 링크, 서비스 정보, 지원 섹션
+    - 소셜 미디어 링크
+    - 저작권 및 API 제공자 정보
+  - Layout에 FooterNav 통합 (`app/layout.tsx`)
+- [x] 접근성 기능 계획서 작성 (`docs/ACCESSIBILITY_FEATURES_PLAN.md`)
+  - 화면 확대/축소 기능 계획 (100%, 125%, 150%, 200%)
+  - 음성 출력 기능 계획 (전체 페이지 + 선택 영역 읽기)
+  - 접근성 도구 모음 계획
+  - 구현 단계 및 테스트 계획
 
 ---
 
@@ -448,6 +481,77 @@
     - 주요 가정 및 리스크
 
 **우선순위**: Medium (사용자 안전 및 서비스 가치 제고)
+
+### UI/UX 및 네비게이션 개선 ✅ 완료
+
+**목표**: Design.md 원칙을 반영한 현대적이고 직관적인 UI/UX 구현
+
+**작업 내용**:
+
+- [x] 전체 페이지 디자인 개선
+  - 홈페이지 Hero 섹션 추가 (`app/page.tsx`)
+    - 그라데이션 배경, 대형 제목, 현대적인 검색창
+    - Design.md 원칙 반영 (모바일 퍼스트, 미니멀리즘, 비주얼 중심)
+  - 캠핑장 카드 디자인 개선 (`components/camping-card.tsx`)
+    - 16:9 이미지 비율, 호버 시 줌 효과
+    - 시설 뱃지 스타일 개선 (컬러 아이콘, rounded-full)
+    - 그라데이션 오버레이 효과
+  - 필터 컴포넌트 디자인 개선 (`components/camping-filters.tsx`)
+    - 아이콘 배경, 더 큰 입력 필드
+    - 활성 필터 뱃지 스타일 개선
+  - 상세페이지 디자인 개선 (`app/campings/[contentId]/page.tsx`)
+    - 2/3 + 1/3 그리드 레이아웃
+    - 예약 버튼 sticky 위치
+    - 정보 구조 개선 (아이콘과 함께 표시)
+  - Navbar 개선 (`components/Navbar.tsx`, `components/navigation/global-nav.tsx`)
+    - backdrop blur 효과
+    - 테마 토글 추가
+    - 반응형 개선
+  - 전역 스타일 개선 (`app/globals.css`)
+    - 그린 테마 적용 (#22C55E)
+    - 포커스 스타일 개선
+    - 타이포그래피 설정
+- [x] 네비게이션 구조 개선 (GNB, LNB, SNB, FNB)
+  - GlobalNav 컴포넌트 생성 (`components/navigation/global-nav.tsx`)
+    - 메인 메뉴 (홈, 안전 수칙, 피드백)
+    - 모바일 햄버거 메뉴
+    - 접근성 향상 (ARIA, 키보드 네비게이션)
+  - LocalNav 컴포넌트 생성 (`components/navigation/local-nav.tsx`)
+    - 페이지별 탭 네비게이션
+    - 브레드크럼 네비게이션
+    - 홈페이지: 모바일 뷰 모드 전환 탭
+    - 상세페이지: 브레드크럼 네비게이션
+  - SideNav 컴포넌트 생성 (`components/navigation/side-nav.tsx`)
+    - 사이드바 형태의 네비게이션
+    - 상세페이지: 빠른 링크 메뉴
+  - FooterNav 컴포넌트 생성 (`components/navigation/footer-nav.tsx`)
+    - 주요 링크, 서비스 정보, 지원 섹션
+    - 소셜 미디어 링크
+    - 저작권 및 API 제공자 정보
+  - Layout에 FooterNav 통합 (`app/layout.tsx`)
+- [x] 접근성 기능 계획서 작성 (`docs/ACCESSIBILITY_FEATURES_PLAN.md`)
+  - 화면 확대/축소 기능 계획 (100%, 125%, 150%, 200%)
+  - 음성 출력 기능 계획 (전체 페이지 + 선택 영역 읽기)
+  - 접근성 도구 모음 계획
+  - 구현 단계 및 테스트 계획
+
+**우선순위**: High (사용자 경험 및 접근성 향상)
+
+### API 및 성능 개선 ✅ 완료
+
+**작업 내용**:
+
+- [x] CORS 문제 해결 (`app/api/campings/route.ts`)
+  - Next.js API Route를 통한 프록시 구현
+  - 서버 사이드에서 API 키 관리
+  - 클라이언트에서 직접 호출 가능
+- [x] 유틸리티 함수 리팩토링 (`lib/utils/camping.ts`)
+  - `normalizeItems` 함수를 CampingApiClient에서 분리
+  - 클라이언트/서버 양쪽에서 사용 가능한 순수 함수로 변경
+- [x] 이미지 최적화 (`next.config.ts`)
+  - 고캠핑 API 이미지 도메인 추가 (gocamping.or.kr)
+
+**우선순위**: High (기능 안정성 및 성능 향상)
 
 **참고 데이터**:
 

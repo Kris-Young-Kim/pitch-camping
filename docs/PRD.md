@@ -459,8 +459,10 @@ app/
 ├── api/
 │   ├── sync-user/
 │   │   └── route.ts            # 사용자 동기화 API
-│   └── safety-guidelines/
-│       └── route.ts            # 안전 수칙 조회 API
+│   ├── safety-guidelines/
+│   │   └── route.ts            # 안전 수칙 조회 API
+│   └── campings/
+│       └── route.ts            # 캠핑장 목록 조회 API (CORS 해결)
 ├── not-found.tsx               # 404 페이지
 ├── sitemap.ts                  # 동적 sitemap 생성
 └── robots.ts                   # robots.txt 생성
@@ -477,6 +479,11 @@ components/
 │   ├── bookmark-button.tsx   # 북마크 버튼 (별 아이콘)
 │   ├── review-section.tsx     # 리뷰 및 평점 섹션
 │   └── reservation-button.tsx # 예약 버튼
+├── navigation/
+│   ├── global-nav.tsx         # GNB (Global Navigation Bar)
+│   ├── local-nav.tsx          # LNB (Local Navigation Bar)
+│   ├── side-nav.tsx           # SNB (Side Navigation Bar)
+│   └── footer-nav.tsx         # FNB (Foot Navigation Bar)
 ├── admin/
 │   ├── stats-card.tsx         # 통계 카드 컴포넌트
 │   └── popular-campings.tsx   # 인기 캠핑장 테이블
@@ -493,6 +500,7 @@ components/
 ├── feedback-form.tsx          # 피드백 폼 컴포넌트
 ├── theme-toggle.tsx           # 테마 전환 버튼
 ├── web-vitals.tsx             # Web Vitals 모니터링
+├── Navbar.tsx                 # GNB 래퍼 (레거시 호환)
 └── ui/                         # shadcn 컴포넌트
 
 lib/
@@ -504,11 +512,12 @@ lib/
 │   ├── rate-limit-handler.ts  # Rate Limit 핸들러
 │   └── fallback-handler.ts    # 폴백 로직 핸들러
 ├── utils/
-│   ├── camping.ts              # 캠핑 관련 유틸리티
+│   ├── camping.ts              # 캠핑 관련 유틸리티 (normalizeItems 등)
 │   ├── logger.ts               # 구조화된 로깅
 │   ├── performance.ts          # 성능 모니터링
 │   ├── metrics.ts              # 메트릭 추적
-│   └── ranking.ts             # 인기도/랭킹 계산
+│   ├── ranking.ts              # 인기도/랭킹 계산
+│   └── popularity.ts           # 인기도 점수 계산
 └── supabase/
     ├── clerk-client.ts         # Client Component용 Supabase
     ├── server.ts               # Server Component용 Supabase
@@ -533,15 +542,20 @@ constants/
 
 ### 7.1 디자인 원칙
 
-- **모바일 우선**: 반응형 디자인
-- **직관성**: 명확한 네비게이션과 정보 계층
+- **모바일 우선**: 반응형 디자인 (60% 이상의 여행 검색이 모바일에서 시작)
+- **미니멀리즘**: 정보 과부하 방지, 여백 활용
+- **인터랙티브 요소**: 지도, 필터, 애니메이션 활용
+- **직관적 네비게이션**: 3클릭 이내 목적지 도달, GNB/LNB/SNB/FNB 구조
+- **비주얼 중심**: 고품질 이미지, 카드 레이아웃
 - **성능**: 빠른 로딩 (이미지 최적화, 레이지 로딩)
-- **접근성**: ARIA 라벨, 키보드 네비게이션
+- **접근성**: ARIA 라벨, 키보드 네비게이션, WCAG 2.1 AA 준수
 
 ### 7.2 컬러 스킴
 
 - 다크/라이트 모드 지원
-- Primary 색상: 캠핑/자연 느낌 (초록색, 갈색 계열 추천)
+- Primary 색상: 캠핑/자연 느낌 (초록색 #22C55E, 갈색 계열)
+- 그린 테마 적용 (#22C55E) - 자연, 산림 느낌
+- Accent 색상: 활력 있는 액션 버튼용
 
 ### 7.3 로딩 상태
 
@@ -554,6 +568,21 @@ constants/
 - API 에러: 에러 메시지 표시 + 재시도 버튼
 - 네트워크 에러: 오프라인 안내
 - 404: 페이지를 찾을 수 없음
+- CORS 에러: Next.js API Route를 통한 프록시 처리
+
+### 7.5 네비게이션 구조
+
+- **GNB (Global Navigation Bar)**: 전역 상단 네비게이션
+  - 로고, 메인 메뉴, 사용자 인증, 테마 토글
+  - 모든 페이지에서 공통 사용
+- **LNB (Local Navigation Bar)**: 페이지별 로컬 네비게이션
+  - 홈페이지: 모바일 뷰 모드 전환 (목록/지도)
+  - 상세페이지: 브레드크럼 네비게이션
+- **SNB (Side Navigation Bar)**: 사이드바 네비게이션
+  - 상세페이지: 빠른 링크 메뉴
+- **FNB (Foot Navigation Bar)**: 푸터 네비게이션
+  - 주요 링크, 서비스 정보, 지원 섹션
+  - 소셜 미디어 링크, 저작권 정보
 
 ---
 
@@ -755,12 +784,16 @@ NEXT_PUBLIC_STORAGE_BUCKET=uploads
 ### Phase 5: 최적화 & 배포 ✅ 완료
 
 - [x] 이미지 최적화 (`next.config.ts` 외부 도메인 설정)
+  - 고캠핑 API 이미지 도메인 추가 (gocamping.or.kr)
 - [x] 전역 에러 핸들링 개선
 - [x] 404 페이지 (`app/not-found.tsx`)
 - [x] SEO 최적화 (메타태그, sitemap.ts, robots.ts)
 - [x] 성능 측정 (Lighthouse 점수 > 80 목표, 코드 레벨 최적화 완료)
 - [x] 환경변수 보안 검증
 - [x] Vercel 배포 설정 (`vercel.json`, CI/CD 파이프라인)
+- [x] CORS 문제 해결 (`app/api/campings/route.ts`)
+  - Next.js API Route를 통한 프록시 구현
+  - 클라이언트에서 직접 API 호출 시 발생하는 CORS 문제 해결
 
 ### Phase 6: 추가 기능 및 페이지 ✅ 일부 완료
 
@@ -785,6 +818,52 @@ NEXT_PUBLIC_STORAGE_BUCKET=uploads
 - [x] `components/safety/safety-guidelines.tsx`
 - [x] `components/safety/safety-recommendations.tsx`
 - [x] 안전 수칙 테이블 (`supabase/migrations/20251106160000_create_safety_guidelines_table.sql`)
+
+#### 6.4 전체 페이지 디자인 개선 ✅ 완료
+
+- [x] 홈페이지 Hero 섹션 추가 (`app/page.tsx`)
+  - 그라데이션 배경, 대형 제목, 현대적인 검색창
+  - Design.md 원칙 반영 (모바일 퍼스트, 미니멀리즘, 비주얼 중심)
+- [x] 캠핑장 카드 디자인 개선 (`components/camping-card.tsx`)
+  - 16:9 이미지 비율, 호버 시 줌 효과
+  - 시설 뱃지 스타일 개선 (컬러 아이콘, rounded-full)
+  - 그라데이션 오버레이 효과
+- [x] 필터 컴포넌트 디자인 개선 (`components/camping-filters.tsx`)
+  - 아이콘 배경, 더 큰 입력 필드
+  - 활성 필터 뱃지 스타일 개선
+- [x] 상세페이지 디자인 개선 (`app/campings/[contentId]/page.tsx`)
+  - 2/3 + 1/3 그리드 레이아웃
+  - 예약 버튼 sticky 위치
+  - 정보 구조 개선 (아이콘과 함께 표시)
+- [x] Navbar 개선 (`components/Navbar.tsx`, `components/navigation/global-nav.tsx`)
+  - backdrop blur 효과
+  - 테마 토글 추가
+  - 반응형 개선
+
+#### 6.5 네비게이션 구조 개선 ✅ 완료
+
+- [x] GNB (Global Navigation Bar) 구현 (`components/navigation/global-nav.tsx`)
+  - 메인 메뉴 (홈, 안전 수칙, 피드백)
+  - 모바일 햄버거 메뉴
+  - 접근성 향상 (ARIA, 키보드 네비게이션)
+- [x] LNB (Local Navigation Bar) 구현 (`components/navigation/local-nav.tsx`)
+  - 홈페이지: 모바일 뷰 모드 전환 탭 (목록/지도)
+  - 상세페이지: 브레드크럼 네비게이션
+- [x] SNB (Side Navigation Bar) 구현 (`components/navigation/side-nav.tsx`)
+  - 상세페이지: 빠른 링크 메뉴
+- [x] FNB (Foot Navigation Bar) 구현 (`components/navigation/footer-nav.tsx`)
+  - 주요 링크, 서비스 정보, 지원 섹션
+  - 소셜 미디어 링크
+  - 저작권 및 API 제공자 정보
+- [x] Layout에 FooterNav 통합 (`app/layout.tsx`)
+
+#### 6.6 접근성 기능 계획 ✅ 완료
+
+- [x] 접근성 기능 계획서 작성 (`docs/ACCESSIBILITY_FEATURES_PLAN.md`)
+  - 화면 확대/축소 기능 계획 (100%, 125%, 150%, 200%)
+  - 음성 출력 기능 계획 (전체 페이지 + 선택 영역 읽기)
+  - 접근성 도구 모음 계획
+  - 구현 단계 및 테스트 계획
 
 ---
 
