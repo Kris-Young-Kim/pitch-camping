@@ -63,18 +63,38 @@ export async function GET(request: NextRequest) {
     };
 
     console.log("[API] 필터:", filter);
+    console.log("[API] API 키 존재 여부:", !!apiKey);
+    console.log("[API] API 키 길이:", apiKey?.length || 0);
     console.log("[API] TourAPI 호출 시작");
     
     // 키워드가 있으면 검색, 없으면 목록 조회
     let response;
-    if (filter.keyword) {
-      const { keyword, ...searchFilter } = filter;
-      response = await travelApi.searchTravel(keyword, searchFilter);
-    } else {
-      response = await travelApi.getTravelList(filter);
+    try {
+      if (filter.keyword) {
+        const { keyword, ...searchFilter } = filter;
+        response = await travelApi.searchTravel(keyword, searchFilter);
+      } else {
+        response = await travelApi.getTravelList(filter);
+      }
+      console.log("[API] TourAPI 응답 성공");
+      console.log("[API] 응답 데이터 구조:", {
+        hasResponse: !!response,
+        hasBody: !!response?.response,
+        hasHeader: !!response?.response?.header,
+        resultCode: response?.response?.header?.resultCode,
+        resultMsg: response?.response?.header?.resultMsg,
+        itemCount: response?.response?.body?.items?.item?.length || 0,
+      });
+    } catch (apiError) {
+      console.error("[API] TourAPI 호출 중 오류:", apiError);
+      console.error("[API] TourAPI 오류 상세:", {
+        message: apiError instanceof Error ? apiError.message : String(apiError),
+        stack: apiError instanceof Error ? apiError.stack : undefined,
+        name: apiError instanceof Error ? apiError.name : "UnknownError",
+      });
+      throw apiError;
     }
     
-    console.log("[API] TourAPI 응답 성공");
     console.groupEnd();
     
     // CORS 헤더 추가 및 캐싱 설정

@@ -73,7 +73,9 @@ export class TravelApiClient {
     const url = new URL(`${this.baseUrl}${endpoint}`);
 
     // 공통 파라미터 추가
-    url.searchParams.append("serviceKey", decodeURIComponent(this.serviceKey));
+    // TourAPI는 serviceKey를 URL 인코딩된 형태로 받아야 함
+    const encodedServiceKey = encodeURIComponent(this.serviceKey);
+    url.searchParams.append("serviceKey", encodedServiceKey);
     url.searchParams.append("MobileApp", "PitchTravel");
     url.searchParams.append("MobileOS", "ETC");
     url.searchParams.append("_type", "json"); // JSON 응답 요청
@@ -84,6 +86,13 @@ export class TravelApiClient {
         url.searchParams.append(key, String(value));
       }
     });
+
+    // 디버깅: 실제 요청 URL 로깅 (API 키는 마스킹)
+    const maskedUrl = url.toString().replace(
+      /serviceKey=[^&]*/,
+      `serviceKey=${encodedServiceKey.substring(0, 10)}...`
+    );
+    logInfo(`[TravelApiClient] 요청 URL: ${maskedUrl}`);
 
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), this.timeout);
@@ -118,18 +127,36 @@ export class TravelApiClient {
 
       const data = await response.json();
 
+      // 응답 구조 로깅
+      logInfo(`[TravelApiClient] API 응답 수신`, {
+        hasResponse: !!data.response,
+        hasHeader: !!data.response?.header,
+        resultCode: data.response?.header?.resultCode,
+        resultMsg: data.response?.header?.resultMsg,
+        hasBody: !!data.response?.body,
+        itemCount: data.response?.body?.items?.item?.length || 0,
+      });
+
       // 응답 검증
       if (data.response?.header?.resultCode !== "0000") {
         trackApiRequest(false, responseTime); // 실패 추적
         const errorMsg =
           data.response?.header?.resultMsg || "알 수 없는 API 오류";
+        const resultCode = data.response?.header?.resultCode;
+        
         logError(
-          `API 오류 (${data.response?.header?.resultCode})`,
+          `API 오류 (${resultCode})`,
           new Error(errorMsg),
-          { endpoint, params }
+          { 
+            endpoint, 
+            params,
+            resultCode,
+            resultMsg: errorMsg,
+            fullResponse: JSON.stringify(data).substring(0, 500), // 처음 500자만
+          }
         );
         throw new Error(
-          `API 오류 (${data.response?.header?.resultCode}): ${errorMsg}`
+          `API 오류 (${resultCode}): ${errorMsg}`
         );
       }
 
