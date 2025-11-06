@@ -19,7 +19,6 @@
 
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import { campingApi } from "@/lib/api/camping-api";
 import { normalizeItems } from "@/lib/utils/camping";
 import { DetailGallery } from "@/components/camping-detail/detail-gallery";

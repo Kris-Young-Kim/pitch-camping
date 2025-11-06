@@ -45,7 +45,9 @@ export class CampingApiClient {
       process.env.NEXT_PUBLIC_GOCAMPING_API_BASE_URL ||
       "http://apis.data.go.kr/B551011/GoCamping";
 
-    if (!this.serviceKey) {
+    // 빌드 시점에는 조용히 처리 (환경 변수가 없을 수 있음)
+    const isBuildTime = process.env.NEXT_PHASE === "phase-production-build";
+    if (!this.serviceKey && !isBuildTime) {
       logError("[CampingApiClient] API 키가 설정되지 않았습니다.");
     }
   }
@@ -57,6 +59,13 @@ export class CampingApiClient {
     endpoint: string,
     params: Record<string, string | number | undefined> = {}
   ): Promise<T> {
+    // API 키 확인
+    if (!this.serviceKey) {
+      const error = new Error("API 키가 설정되지 않았습니다.");
+      logError(`[CampingApiClient] API 요청 실패: ${endpoint}`, error, { params });
+      throw error;
+    }
+
     logInfo(`[CampingApiClient] API 요청: ${endpoint}`, { params });
 
     const url = new URL(`${this.baseUrl}${endpoint}`);

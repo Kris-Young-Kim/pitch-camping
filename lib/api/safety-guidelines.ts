@@ -52,6 +52,13 @@ export interface SafetyGuidelineFilter {
 export async function getSafetyGuidelines(
   filter: SafetyGuidelineFilter = {}
 ): Promise<SafetyGuideline[]> {
+  // 빌드 시점에는 조용히 빈 배열 반환 (Supabase 연결 불가)
+  const isBuildTime = process.env.NEXT_PHASE === "phase-production-build";
+  
+  if (isBuildTime) {
+    return [];
+  }
+
   logInfo("[SafetyGuidelines] 안전 수칙 목록 조회", { filter });
 
   try {
@@ -90,14 +97,22 @@ export async function getSafetyGuidelines(
     const { data, error } = await query;
 
     if (error) {
+      // 테이블이 없거나 연결 실패 시 조용히 빈 배열 반환
+      if (error.code === "PGRST116" || error.code === "42P01") {
+        // 테이블이 존재하지 않음
+        return [];
+      }
       logError("[SafetyGuidelines] 안전 수칙 조회 실패", error, { filter });
-      throw error;
+      return [];
     }
 
     logInfo("[SafetyGuidelines] 안전 수칙 조회 완료", { count: data?.length || 0 });
     return (data || []) as SafetyGuideline[];
   } catch (error) {
-    logError("[SafetyGuidelines] 안전 수칙 조회 오류", error, { filter });
+    // 빌드 시점이 아닐 때만 로그 출력
+    if (!isBuildTime) {
+      logError("[SafetyGuidelines] 안전 수칙 조회 오류", error, { filter });
+    }
     return [];
   }
 }

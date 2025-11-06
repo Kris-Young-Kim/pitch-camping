@@ -174,6 +174,25 @@ export function GlobalNav() {
                   </Link>
                 );
               })}
+              <SignedIn>
+                <div className="pt-4 mt-4 border-t border-gray-200 dark:border-gray-700">
+                  {userMenuItems.map((item) => {
+                    const Icon = item.icon;
+                    return (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        onClick={() => setMobileMenuOpen(false)}
+                        className="flex items-center gap-3 px-4 py-3 rounded-md text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+                        role="menuitem"
+                      >
+                        <Icon className="w-5 h-5" aria-hidden="true" />
+                        <span>{item.label}</span>
+                      </Link>
+                    );
+                  })}
+                </div>
+              </SignedIn>
             </div>
           </div>
         )}
