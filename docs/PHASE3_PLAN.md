@@ -1,0 +1,278 @@
+# Phase 3 개발 계획: 사업화·운영 확장
+
+## 개요
+
+Phase 3은 MVP 기능 완성 후 프로덕션 배포 및 운영을 위한 인프라 강화 단계입니다. 데이터베이스 보안, 통계 시스템, 리뷰 기능, 모니터링, 성능 최적화를 포함합니다.
+
+## 목표
+
+- 프로덕션 배포 준비 (RLS 보안 정책)
+- 사용자 행동 분석 및 통계 시스템 구축
+- 리뷰·평점 시스템 MVP 구현
+- 운영 모니터링 대시보드 생성
+- API 안정성 및 성능 최적화
+
+## 작업 항목
+
+### 1. 데이터베이스 보안 및 마이그레이션
+
+#### 1.1 RLS 정책 설계 및 문서화
+
+**파일**: `supabase/migrations/YYYYMMDDHHmmss_enable_rls_policies.sql`
+
+**users 테이블 RLS 정책**:
+- SELECT: 자신의 데이터만 조회 가능
+- INSERT: 새 사용자 생성 가능
+- UPDATE: 자신의 데이터만 수정 가능
+- DELETE: 자신의 데이터만 삭제 가능 (선택적)
+
+**bookmarks 테이블 RLS 정책**:
+- SELECT: 자신의 북마크만 조회 가능
+- INSERT: 자신의 북마크만 추가 가능
+- DELETE: 자신의 북마크만 삭제 가능
+
+**참고**: 개발 환경에서는 RLS를 비활성화하되, 프로덕션 배포 전 정책을 검토하고 테스트
+
+#### 1.2 데이터 품질 점검 스크립트
+
+**파일**: `scripts/check-data-quality.ts`
+
+**검사 항목**:
+- 북마크 데이터 무결성 검사
+- 사용자 데이터 정합성 확인
+- 중복 데이터 검증
+- NULL 값 및 제약조건 위반 확인
+
+### 2. 통계/랭킹/인기도 시스템
+
+#### 2.1 통계 테이블 생성
+
+**파일**: `supabase/migrations/YYYYMMDDHHmmss_create_statistics_tables.sql`
+
+**camping_stats 테이블**:
+```sql
+CREATE TABLE camping_stats (
+  content_id TEXT PRIMARY KEY,
+  view_count INTEGER DEFAULT 0,
+  bookmark_count INTEGER DEFAULT 0,
+  last_viewed_at TIMESTAMPTZ,
+  updated_at TIMESTAMPTZ DEFAULT now()
+);
+```
+
+**user_activity 테이블**:
+```sql
+CREATE TABLE user_activity (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES users(id),
+  content_id TEXT NOT NULL,
+  activity_type TEXT NOT NULL, -- 'view', 'bookmark', 'share'
+  created_at TIMESTAMPTZ DEFAULT now()
+);
+```
+
+**인덱스**:
+- `camping_stats(content_id)`
+- `user_activity(user_id, created_at DESC)`
+- `user_activity(content_id, activity_type)`
+
+#### 2.2 조회수 추적 시스템
+
+**파일**: `lib/api/analytics.ts`
+
+**기능**:
+- 캠핑장 상세페이지 조회 시 통계 업데이트
+- Server Action으로 구현 (`actions/track-view.ts`)
+- 클라이언트에서 직접 호출하지 않고 서버 사이드에서 처리
+
+**파일**: `app/campings/[contentId]/page.tsx` 수정
+- 상세페이지 로드 시 `trackView` Server Action 호출
+
+#### 2.3 인기도/랭킹 계산
+
+**파일**: `lib/utils/ranking.ts`
+
+**기능**:
+- 인기도 점수 계산 함수 (조회수, 북마크 수 가중치)
+- 랭킹 조회 함수 (지역별, 타입별)
+- 주기적 업데이트 (Cron Job 또는 Edge Function)
+
+#### 2.4 통계 API 엔드포인트
+
+**파일**: `app/api/stats/route.ts` (또는 Server Actions)
+
+**기능**:
+- 인기 캠핑장 조회
+- 지역별 통계
+- 타입별 통계
+
+### 3. 리뷰·평점 시스템 MVP
+
+#### 3.1 리뷰 테이블 설계
+
+**파일**: `supabase/migrations/YYYYMMDDHHmmss_create_reviews_table.sql`
+
+**reviews 테이블**:
+```sql
+CREATE TABLE reviews (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  content_id TEXT NOT NULL,
+  rating INTEGER NOT NULL CHECK (rating >= 1 AND rating <= 5),
+  comment TEXT,
+  created_at TIMESTAMPTZ DEFAULT now(),
+  updated_at TIMESTAMPTZ DEFAULT now(),
+  CONSTRAINT unique_user_review UNIQUE(user_id, content_id)
+);
+```
+
+**review_helpful 테이블** (선택적):
+```sql
+CREATE TABLE review_helpful (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  review_id UUID REFERENCES reviews(id) ON DELETE CASCADE,
+  user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+  created_at TIMESTAMPTZ DEFAULT now(),
+  CONSTRAINT unique_review_helpful UNIQUE(review_id, user_id)
+);
+```
+
+#### 3.2 리뷰 API 및 컴포넌트
+
+**파일**: `lib/api/reviews.ts`
+- 리뷰 작성, 수정, 삭제
+- 리뷰 목록 조회
+- 평균 평점 계산
+
+**파일**: `components/camping-detail/review-section.tsx`
+- 리뷰 목록 표시
+- 리뷰 작성 폼
+- 평점 표시 (별점)
+
+**파일**: `components/camping-detail/review-card.tsx`
+- 개별 리뷰 카드 컴포넌트
+
+**파일**: `app/campings/[contentId]/page.tsx` 수정
+- 리뷰 섹션 추가
+
+#### 3.3 고캠핑 API 리뷰 데이터 통합 (있다면)
+
+**파일**: `lib/api/camping-api.ts` 수정
+- 리뷰 데이터 필드 확인 및 파싱
+- 자체 DB 리뷰와 병합
+
+### 4. 서비스 운영 KPI 대시보드
+
+#### 4.1 관리자 대시보드 페이지
+
+**파일**: `app/admin/dashboard/page.tsx`
+
+**기능**:
+- 접근 제어: 관리자 권한 확인 (Clerk role 기반)
+- 주요 지표 표시:
+  - 총 사용자 수
+  - 총 캠핑장 조회 수
+  - 총 북마크 수
+  - 총 리뷰 수
+  - 인기 캠핑장 TOP 10
+
+#### 4.2 통계 컴포넌트
+
+**파일**: `components/admin/stats-card.tsx`
+- 통계 카드 컴포넌트 (재사용 가능)
+
+**파일**: `components/admin/popular-campings.tsx`
+- 인기 캠핑장 목록
+
+**파일**: `components/admin/user-growth-chart.tsx`
+- 사용자 증가 추이 (선택적, 차트 라이브러리 필요)
+
+#### 4.3 Server Actions
+
+**파일**: `actions/admin-stats.ts`
+- 관리자 통계 조회 Server Actions
+- 인증 및 권한 확인
+
+### 5. 클라우드 인프라/비용 모니터링
+
+#### 5.1 로깅 시스템
+
+**파일**: `lib/utils/logger.ts`
+- 구조화된 로깅 유틸리티
+- 에러, 경고, 정보 로그 분리
+- 프로덕션: Vercel Logs 연동
+
+#### 5.2 성능 모니터링
+
+**파일**: `lib/utils/performance.ts`
+- API 응답 시간 측정
+- 페이지 로드 시간 추적
+- Web Vitals 측정 (선택적)
+
+#### 5.3 비용 추적
+
+**문서**: `docs/COST_TRACKING.md`
+- Vercel 사용량 모니터링
+- Supabase 사용량 추적
+- 네이버 지도 API 호출 수 추적
+- 월별 비용 예상치 문서화
+
+### 6. API Rate Limit/품질 이슈 대응
+
+#### 6.1 Rate Limit 감지 및 처리
+
+**파일**: `lib/api/rate-limit-handler.ts`
+- API 응답 상태 코드 확인 (429 Too Many Requests)
+- Rate Limit 도달 시 대기 후 재시도
+- Exponential backoff 구현
+
+**파일**: `lib/api/camping-api.ts` 수정
+- rate limit 핸들러 통합
+- 에러 타입 정의 및 처리
+
+#### 6.2 캐싱 전략 강화
+
+**파일**: `lib/api/camping-api.ts` 수정
+- Next.js fetch 캐싱 옵션 추가 (`next: { revalidate }`)
+- 캐시 태그 활용 (on-demand revalidation)
+
+**참고**: `docs/CACHING_STRATEGY.md` 문서 참고하여 구현
+
+#### 6.3 폴백 로직
+
+**파일**: `lib/api/fallback-handler.ts`
+- API 호출 실패 시 캐시된 데이터 반환
+- 오프라인 상태 감지 및 대응
+- 에러 메시지 사용자 친화적 표시
+
+**파일**: `components/camping-list.tsx` 수정
+- 폴백 핸들러 통합
+
+## 구현 순서
+
+1. **Week 1**: 데이터베이스 보안 (RLS 정책 설계, 통계 테이블 생성)
+2. **Week 2**: 통계 시스템 (조회수 추적, 인기도 계산)
+3. **Week 3**: 리뷰 시스템 (테이블, API, UI)
+4. **Week 4**: KPI 대시보드 및 모니터링
+5. **Week 5**: API 안정성 강화 (Rate Limit, 폴백) 및 테스트
+
+## 주의사항
+
+- RLS 정책은 프로덕션 배포 전 충분한 테스트 필요
+- 통계 데이터는 점진적으로 축적되므로 초기에는 샘플 데이터로 테스트
+- 리뷰 시스템은 스팸 방지 로직 고려 (추후 확장)
+- 관리자 대시보드 접근 권한은 Clerk role 기반으로 구현
+- API Rate Limit은 실제 사용량 모니터링 후 조정
+
+## 성공 지표
+
+- RLS 정책 적용 및 테스트 완료
+- 통계 데이터 정확도 > 95%
+- 리뷰 시스템 안정성 (에러율 < 1%)
+- API 호출 성공률 > 98% (Rate Limit 대응 포함)
+- 대시보드 로드 시간 < 2초
+
+## 다음 단계
+
+Phase 4로 진행하여 UI/UX 개선 및 접근성 강화.
+
