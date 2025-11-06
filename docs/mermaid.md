@@ -14,7 +14,7 @@ gantt
     공통 인프라 :phase1_infra, after phase1_setup, 7d
 
     section Phase 2
-    관광지 목록 기능 :phase2_list, after phase1_infra, 21d
+    캠핑장 목록 기능 :phase2_list, after phase1_infra, 21d
     지도 연동 :phase2_map, after phase2_list, 14d
     키워드 검색 :phase2_search, after phase2_map, 14d
     상세페이지 :phase2_detail, after phase2_search, 21d
@@ -58,7 +58,7 @@ graph TB
 
     subgraph API["🔌 Backend API"]
         NextAPI["Next.js API Routes"]
-        TourAPI["한국관광공사 API<br/>KorService2"]
+        CampingAPI["고캠핑 API<br/>GoCamping API"]
         Cache["캐시 레이어"]
         ErrorHandle["에러 처리 및 폴백"]
     end
@@ -82,9 +82,9 @@ graph TB
     UI --> State
     State --> NextAPI
 
-    NextAPI --> TourAPI
+    NextAPI --> CampingAPI
     NextAPI --> Cache
-    TourAPI --> ErrorHandle
+    CampingAPI --> ErrorHandle
     ErrorHandle --> Supabase
 
     NextAPI --> DB
@@ -108,7 +108,7 @@ graph TB
 
 ```mermaid
 graph LR
-    Start["🏠 홈페이지<br/>관광지 목록"] --> Filter["🎯 필터링<br/>지역/타입/검색"]
+    Start["🏠 홈페이지<br/>캠핑장 목록"] --> Filter["🎯 필터링<br/>지역/타입/검색"]
     Filter --> List["📋 목록 표시<br/>카드 그리드"]
     List --> Map["🗺️ 지도 확인<br/>마커 표시"]
 
@@ -124,7 +124,7 @@ graph LR
     DetailInfo --> Bookmark["⭐ 북마크<br/>Supabase 저장"]
 
     Bookmark --> BookmarkList["📖 북마크 목록<br/>내 즐겨찾기"]
-    BookmarkList --> End["✅ 사용자 여행 계획<br/>완료"]
+    BookmarkList --> End["✅ 사용자 캠핑 계획<br/>완료"]
 
     style Start fill:#4A90E2
     style Detail fill:#F5A623
@@ -145,29 +145,29 @@ graph TD
     App --> Footer["Footer Component"]
 
     Header --> Logo["Logo / Brand"]
-    Header --> Search["Search Bar<br/>tour-search.tsx"]
+    Header --> Search["Search Bar<br/>camping-search.tsx"]
     Header --> Nav["Navigation"]
 
     Main --> Home["Home Page<br/>app/page.tsx"]
-    Main --> Detail["Detail Page<br/>app/places/[contentId]/page.tsx"]
+    Main --> Detail["Detail Page<br/>app/campings/[contentId]/page.tsx"]
     Main --> Bookmarks["Bookmarks Page<br/>app/bookmarks/page.tsx"]
 
-    Home --> Filters["Tour Filters<br/>tour-filters.tsx"]
-    Home --> List["Tour List<br/>tour-list.tsx"]
+    Home --> Filters["Camping Filters<br/>camping-filters.tsx"]
+    Home --> List["Camping List<br/>camping-list.tsx"]
     Home --> MapHome["Naver Map<br/>naver-map.tsx"]
 
     Filters --> RegionFilter["Region Filter"]
     Filters --> TypeFilter["Type Filter"]
     Filters --> SortFilter["Sort Options"]
 
-    List --> Card["Tour Card<br/>tour-card.tsx"]
+    List --> Card["Camping Card<br/>camping-card.tsx"]
     Card --> Image["Thumbnail Image"]
     Card --> Title["Title & Address"]
     Card --> Badge["Type Badge"]
     Card --> Overview["Overview Text"]
 
     Detail --> DetailInfo["Detail Info<br/>detail-info.tsx"]
-    Detail --> DetailIntro["Detail Intro<br/>detail-intro.tsx"]
+    Detail --> DetailIntro["Detail Intro<br/>detail-facilities.tsx"]
     Detail --> DetailGallery["Detail Gallery<br/>detail-gallery.tsx"]
     Detail --> DetailMap["Detail Map<br/>detail-map.tsx"]
     Detail --> ShareBtn["Share Button<br/>share-button.tsx"]
@@ -193,7 +193,7 @@ graph LR
     User -->|검색/필터| UI["UI 입력"]
     UI -->|쿼리 생성| NextAPI["Next.js API"]
 
-    NextAPI -->|API 호출| PublicAPI["한국관광공사 API<br/>KorService2"]
+    NextAPI -->|API 호출| PublicAPI["고캠핑 API<br/>GoCamping API"]
     PublicAPI -->|JSON 응답| Cache["캐시 레이어"]
     Cache -->|데이터 저장| Supabase["Supabase DB"]
 
@@ -226,7 +226,7 @@ quadrantChart
     x-axis Low Impact --> High Impact
     y-axis Low Effort --> High Effort
 
-    관광지 목록: 0.8, 0.3
+    캠핑장 목록: 0.8, 0.3
     지도 연동: 0.75, 0.5
     키워드 검색: 0.7, 0.3
     상세페이지: 0.85, 0.4
@@ -368,13 +368,13 @@ graph TD
 ```mermaid
 graph TB
     subgraph Partners["🤝 파트너십"]
-        P1["한국관광공사"]
+        P1["고캠핑"]
         P2["네이버 클라우드"]
-        P3["관광지/숙박업소"]
+        P3["캠핑장/예약업소"]
     end
 
     subgraph Key["🔑 핵심 요소"]
-        K1["관광지 정보 DB"]
+        K1["캠핑장 정보 DB"]
         K2["지도 시각화"]
         K3["사용자 행동 데이터"]
     end
@@ -386,13 +386,13 @@ graph TB
     end
 
     subgraph Customer["👥 고객"]
-        C1["국내 여행자"]
+        C1["국내 캠퍼"]
         C2["특정 지역 탐색자"]
-        C3["여행 계획 수립자"]
+        C3["캠핑 계획 수립자"]
     end
 
     subgraph Revenue["💰 수익"]
-        R1["광고 (관광지/숙박)"]
+        R1["광고 (캠핑장/예약)"]
         R2["예약 수수료"]
         R3["프리미엄 서비스"]
         R4["B2B 정보 제공"]
@@ -420,7 +420,7 @@ quadrantChart
     x-axis 개발 완료도 0 --> 100
     y-axis 사용자 만족도 0 --> 100
 
-    관광지 목록: 95, 85
+    캠핑장 목록: 95, 85
     지도 연동: 80, 80
     검색 기능: 90, 82
     상세 페이지: 85, 88

@@ -53,7 +53,9 @@
 │   └── og-image.png
 ├── README.md
 ├── supabase
-│   ├── config.toml
-│   └── migrations
-│   └── schema.sql
+│ ├── config.toml
+│ └── migrations
+│ ├── setup_schema.sql
+│ ├── setup_storage.sql
+│ └── tourapi_schema.sql
 └── tsconfig.json
