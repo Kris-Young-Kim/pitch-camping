@@ -346,8 +346,9 @@ export const travelApi = (() => {
   return {
     getTravelList: () => Promise.reject(new Error("클라이언트에서는 API Route를 사용하세요")),
     getTravelDetail: () => Promise.reject(new Error("클라이언트에서는 API Route를 사용하세요")),
+    getTravelDetailIntro: () => Promise.reject(new Error("클라이언트에서는 API Route를 사용하세요")),
     searchTravel: () => Promise.reject(new Error("클라이언트에서는 API Route를 사용하세요")),
     getTravelImages: () => Promise.reject(new Error("클라이언트에서는 API Route를 사용하세요")),
-  } as TravelApiClient;
+  } as unknown as TravelApiClient;
 })();
 
