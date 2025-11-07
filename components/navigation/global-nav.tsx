@@ -24,7 +24,7 @@
 
 "use client";
 
-import { SignedOut, SignInButton, SignUpButton, SignedIn, UserButton } from "@clerk/nextjs";
+import { SignedOut, SignInButton, SignUpButton, SignedIn, UserButton, useUser } from "@clerk/nextjs";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
@@ -47,6 +47,7 @@ const userMenuItems = [
 export function GlobalNav() {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { user } = useUser();
 
   const isActive = (href: string) => {
     if (href === "/") {
@@ -54,6 +55,10 @@ export function GlobalNav() {
     }
     return pathname?.startsWith(href);
   };
+
+  // 관리자 권한 확인 (환경변수는 클라이언트에서 접근 불가하므로, 일단 모든 로그인 사용자에게 표시)
+  // 실제 권한 체크는 페이지 레벨에서 수행
+  const isAdmin = user ? true : false;
 
   return (
     <header
@@ -95,6 +100,32 @@ export function GlobalNav() {
                   </Link>
                 );
               })}
+              {/* 사용자 메뉴 (로그인 시 표시) */}
+              <SignedIn>
+                {userMenuItems
+                  .filter((item) => !item.adminOnly || isAdmin)
+                  .map((item) => {
+                    const Icon = item.icon;
+                    const active = isActive(item.href);
+                    return (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        className={cn(
+                          "flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2",
+                          active
+                            ? "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300"
+                            : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-blue-600 dark:hover:text-blue-400"
+                        )}
+                        aria-current={active ? "page" : undefined}
+                        role="menuitem"
+                      >
+                        <Icon className="w-4 h-4" aria-hidden="true" />
+                        <span>{item.label}</span>
+                      </Link>
+                    );
+                  })}
+              </SignedIn>
             </div>
           </div>
 
@@ -176,21 +207,30 @@ export function GlobalNav() {
               })}
               <SignedIn>
                 <div className="pt-4 mt-4 border-t border-gray-200 dark:border-gray-700">
-                  {userMenuItems.map((item) => {
-                    const Icon = item.icon;
-                    return (
-                      <Link
-                        key={item.href}
-                        href={item.href}
-                        onClick={() => setMobileMenuOpen(false)}
-                        className="flex items-center gap-3 px-4 py-3 rounded-md text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                        role="menuitem"
-                      >
-                        <Icon className="w-5 h-5" aria-hidden="true" />
-                        <span>{item.label}</span>
-                      </Link>
-                    );
-                  })}
+                  {userMenuItems
+                    .filter((item) => !item.adminOnly || isAdmin)
+                    .map((item) => {
+                      const Icon = item.icon;
+                      const active = isActive(item.href);
+                      return (
+                        <Link
+                          key={item.href}
+                          href={item.href}
+                          onClick={() => setMobileMenuOpen(false)}
+                          className={cn(
+                            "flex items-center gap-3 px-4 py-3 rounded-md text-base font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2",
+                            active
+                              ? "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300"
+                              : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+                          )}
+                          aria-current={active ? "page" : undefined}
+                          role="menuitem"
+                        >
+                          <Icon className="w-5 h-5" aria-hidden="true" />
+                          <span>{item.label}</span>
+                        </Link>
+                      );
+                    })}
                 </div>
               </SignedIn>
             </div>

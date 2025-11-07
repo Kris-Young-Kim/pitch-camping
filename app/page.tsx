@@ -103,15 +103,15 @@ function HomeContent() {
       {/* Hero Section */}
       <section className="relative bg-gradient-to-br from-blue-50 via-white to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 py-16 md:py-24 px-4">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-12 space-y-6">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white tracking-tight">
+          <div className="text-center mb-12 space-y-8">
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white tracking-tight leading-relaxed">
               한국의 아름다운
-              <br />
+              <br className="mb-2" />
               <span className="text-blue-600 dark:text-blue-400">
                 여행지를 탐험하세요
               </span>
             </h1>
-            <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+            <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto leading-relaxed">
               전국 여행지 정보를 한눈에 확인하고, 나만의 여행을
               계획해보세요
             </p>
