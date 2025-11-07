@@ -293,9 +293,10 @@ export async function deleteReview(
 export async function getReviews(
   contentId: string,
   limit: number = 10,
-  offset: number = 0
+  offset: number = 0,
+  petFriendlyOnly: boolean = false
 ): Promise<Review[]> {
-  console.log(`[Reviews] 리뷰 목록 조회: ${contentId}, limit=${limit}, offset=${offset}`);
+  console.log(`[Reviews] 리뷰 목록 조회: ${contentId}, limit=${limit}, offset=${offset}, petFriendlyOnly=${petFriendlyOnly}`);
 
   try {
     const supabase = await createClerkSupabaseClient();

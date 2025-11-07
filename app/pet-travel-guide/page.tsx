@@ -17,7 +17,7 @@
 
 import { LocalNav } from "@/components/navigation/local-nav";
 import { SideNav } from "@/components/navigation/side-nav";
-import { Home, Shield, MessageSquare, Heart, AlertTriangle, CheckCircle, MapPin, Dog, Cat } from "lucide-react";
+import { Home, Shield, MessageSquare, Heart, AlertTriangle, CheckCircle, MapPin, Dog, Cat, BarChart3, Sparkles, Users } from "lucide-react";
 import Link from "next/link";
 import type { Metadata } from "next";
 
@@ -64,9 +64,32 @@ export default function PetTravelGuidePage() {
                   반려동물 동반 여행 가이드
                 </h1>
               </div>
-              <p className="text-lg text-gray-600 dark:text-gray-400">
+              <p className="text-lg text-gray-600 dark:text-gray-400 mb-4">
                 반려동물과 함께하는 즐거운 여행을 위한 가이드와 팁을 확인하세요.
               </p>
+              <div className="flex flex-wrap gap-2">
+                <Link
+                  href="/pet-travel/analytics"
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-colors text-sm font-medium"
+                >
+                  <BarChart3 className="w-4 h-4" />
+                  통계 보기
+                </Link>
+                <Link
+                  href="/pet-travel/recommendations"
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors text-sm font-medium"
+                >
+                  <Sparkles className="w-4 h-4" />
+                  추천 받기
+                </Link>
+                <Link
+                  href="/pet-travel/community"
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors text-sm font-medium"
+                >
+                  <Users className="w-4 h-4" />
+                  커뮤니티
+                </Link>
+              </div>
             </div>
 
             {/* 여행 전 체크리스트 */}

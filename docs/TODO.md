@@ -327,23 +327,31 @@
 - [x] 클라우드 인프라/비용 모니터링·성능 최적화
 - [x] API Rate Limit/품질 이슈 캐시·폴백 로직
 - [ ] 반려동물 동반 여행 기능 확장 (Phase 3)
-  - [ ] 반려동물 동반 여행지 통계 및 분석
-    - 반려동물 동반 가능 여행지 통계 (지역별, 타입별)
-    - 반려동물 동반 여행지 인기도 분석
-    - 반려동물 동반 만족도 통계
-  - [ ] 반려동물 동반 여행지 리뷰 시스템 확장
-    - 리뷰에 반려동물 동반 경험 필드 추가
-    - 반려동물 동반 만족도 별도 평가 항목
-    - 반려동물 동반 리뷰 필터링 및 검색
-    - 반려동물 동반 리뷰 통계 및 분석
-  - [ ] 반려동물 동반 여행지 추천 시스템
-    - 사용자 기반 반려동물 동반 여행지 추천
-    - 지역별 반려동물 동반 인기 여행지 추천
-    - 계절별 반려동물 동반 여행지 추천
-  - [ ] 반려동물 동반 여행 커뮤니티 기능
-    - 반려동물 동반 여행 후기 공유
-    - 반려동물 동반 여행지 정보 공유
-    - 반려동물 동반 여행 팁 및 체크리스트 공유
+  - [x] 반려동물 동반 여행지 통계 및 분석
+    - [x] 반려동물 동반 가능 여행지 통계 (지역별, 타입별) (`getPetFriendlyStatistics` Server Action)
+    - [x] 반려동물 동반 여행지 인기도 분석 (조회수, 북마크 수, 리뷰 수 기반 인기도 점수 계산)
+    - [x] 반려동물 동반 만족도 통계 (리뷰 평점 기반 평균 만족도)
+    - [x] 통계 대시보드 페이지 (`app/pet-travel/analytics/page.tsx`)
+    - [x] 통계 UI 컴포넌트 (`PetFriendlyAnalyticsContent`)
+  - [x] 반려동물 동반 여행지 리뷰 시스템 확장
+    - [x] 리뷰에 반려동물 동반 경험 필드 추가 (reviews 테이블에 pet_friendly_experience, pet_friendly_rating, pet_friendly_comment 필드)
+    - [x] 반려동물 동반 만족도 별도 평가 항목 (1-5점 평점)
+    - [x] 반려동물 동반 리뷰 필터링 및 검색 (getReviews 함수에 petFriendlyOnly 파라미터)
+    - [x] 반려동물 동반 리뷰 통계 및 분석 (getPetFriendlyReviewStats 함수, PetFriendlyReviewSection 컴포넌트)
+  - [x] 반려동물 동반 여행지 추천 시스템
+    - [x] 사용자 기반 반려동물 동반 여행지 추천 (북마크한 여행지와 유사한 지역/타입 추천)
+    - [x] 지역별 반려동물 동반 인기 여행지 추천 (인기도 점수 기반)
+    - [x] 계절별 반려동물 동반 여행지 추천 (계절에 맞는 여행지 타입 우선)
+    - [x] 추천 페이지 (`app/pet-travel/recommendations/page.tsx`)
+    - [x] 추천 UI 컴포넌트 (`PetFriendlyRecommendationsContent`)
+  - [x] 반려동물 동반 여행 커뮤니티 기능
+    - [x] 반려동물 동반 여행 후기 공유 (pet_travel_posts 테이블, post_type='review')
+    - [x] 반려동물 동반 여행지 정보 공유 (travel_contentid 필드로 여행지 연결)
+    - [x] 반려동물 동반 여행 팁 및 체크리스트 공유 (post_type='tip', 'checklist')
+    - [x] 커뮤니티 페이지 (`app/pet-travel/community/page.tsx`)
+    - [x] 게시글 작성/조회/좋아요 기능 (createPetTravelPost, getPetTravelPosts, togglePetTravelPostLike)
+    - [x] 게시글 카드 컴포넌트 (`PetTravelPostCard`)
+    - [x] 게시글 작성 다이얼로그 (`PetTravelPostDialog`)
 
 ### Phase 3 완료 상세
 
