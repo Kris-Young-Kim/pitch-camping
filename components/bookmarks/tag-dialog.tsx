@@ -39,12 +39,12 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { createBookmarkTag, type CreateTagInput } from "@/actions/bookmarks/tags/create-tag";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import type { BookmarkTag } from "@/actions/bookmarks/tags/get-tags";
+import { TagAutocomplete } from "@/components/bookmarks/tag-autocomplete";
 
 const tagSchema = z.object({
   name: z.string().min(1, "태그명은 필수입니다.").max(30, "태그명은 30자 이하여야 합니다."),
@@ -145,7 +145,7 @@ export function TagDialog({
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            {/* 태그명 */}
+            {/* 태그명 (자동완성) */}
             <FormField
               control={form.control}
               name="name"
@@ -153,11 +153,24 @@ export function TagDialog({
                 <FormItem>
                   <FormLabel>태그명 *</FormLabel>
                   <FormControl>
-                    <Input
+                    <TagAutocomplete
+                      value={field.value}
+                      onChange={(value) => {
+                        field.onChange(value);
+                      }}
+                      onSelect={(selectedTag) => {
+                        // 기존 태그를 선택한 경우 색상도 자동으로 설정
+                        if (selectedTag && selectedTag.color) {
+                          form.setValue("color", selectedTag.color);
+                        }
+                      }}
                       placeholder="예: 가을여행, 맛집, 부산"
-                      {...field}
+                      excludeTagIds={tag ? [tag.id] : []}
                     />
                   </FormControl>
+                  <FormDescription>
+                    태그명을 입력하면 기존 태그가 자동완성됩니다.
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}

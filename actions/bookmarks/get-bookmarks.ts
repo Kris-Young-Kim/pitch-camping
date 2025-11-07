@@ -28,6 +28,7 @@ import { logError, logInfo } from "@/lib/utils/logger";
 export interface BookmarkWithTravel extends TravelSite {
   bookmarkId: string;
   bookmarkedAt: string;
+  folderId?: string | null;
   tags?: Array<{
     id: string;
     name: string;
@@ -224,6 +225,7 @@ export async function getBookmarks(
           ...travel,
           bookmarkId: bookmark.id,
           bookmarkedAt: bookmark.created_at,
+          folderId: bookmark.folder_id || null,
           tags: tagsByBookmark.get(bookmark.id) || [],
           note: bookmark.note || null,
           noteUpdatedAt: bookmark.note_updated_at || null,

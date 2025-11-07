@@ -30,6 +30,17 @@ declare global {
   }
 }
 
+interface BookmarkMarkerInfo {
+  bookmarks: Array<{
+    bookmarkId: string;
+    contentid: string;
+    folderId?: string | null;
+    tags?: Array<{ id: string; name: string; color: string | null }>;
+  }>;
+  folderId?: string | null;
+  tagIds?: string[];
+}
+
 interface NaverMapProps {
   travels: TravelSite[];
   center?: { lat: number; lng: number };
@@ -43,6 +54,8 @@ interface NaverMapProps {
   currentFilter?: { keyword?: string; type?: string };
   // 반려동물 동반 여행지 필터링
   showPetFriendlyOnly?: boolean;
+  // 북마크 마커 정보 (폴더/태그별 색상 구분)
+  bookmarkMarkers?: BookmarkMarkerInfo;
 }
 
 export function NaverMap({
@@ -56,6 +69,7 @@ export function NaverMap({
   onFilterChange,
   currentFilter,
   showPetFriendlyOnly = false,
+  bookmarkMarkers,
 }: NaverMapProps) {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<any>(null);
@@ -67,6 +81,7 @@ export function NaverMap({
   const prevTravelsRef = useRef<string>(""); // 이전 travels의 contentid 문자열
   const onMarkerClickRef = useRef(onMarkerClick);
   const showPetFriendlyOnlyRef = useRef(showPetFriendlyOnly);
+  const bookmarkMarkersRef = useRef(bookmarkMarkers);
 
   // travels와 onMarkerClick을 ref로 저장하여 안정화
   useEffect(() => {
@@ -80,6 +95,10 @@ export function NaverMap({
   useEffect(() => {
     showPetFriendlyOnlyRef.current = showPetFriendlyOnly;
   }, [showPetFriendlyOnly]);
+
+  useEffect(() => {
+    bookmarkMarkersRef.current = bookmarkMarkers;
+  }, [bookmarkMarkers]);
 
   // 마커 추가 함수 (initializeMap보다 먼저 정의)
   const addMarkers = useCallback(() => {
@@ -114,33 +133,81 @@ export function NaverMap({
 
         const position = new window.naver.maps.LatLng(coords.lat, coords.lng);
 
+        // 북마크 정보 확인
+        const bookmarkInfo = bookmarkMarkersRef.current?.bookmarks.find(
+          (b) => b.contentid === travel.contentid
+        );
+
         // 반려동물 동반 여행지 여부 확인
         const isPetFriendly = travel.pet_friendly === true;
 
-        // 마커 아이콘 설정 (반려동물 동반 여행지는 다른 색상/아이콘 사용)
-        const markerIcon = isPetFriendly
-          ? {
-              content: `
-                <div style="
-                  width: 40px;
-                  height: 40px;
-                  background-color: #10b981;
-                  border: 3px solid white;
-                  border-radius: 50%;
-                  display: flex;
-                  align-items: center;
-                  justify-content: center;
-                  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-                  position: relative;
-                ">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-                  </svg>
-                </div>
-              `,
-              anchor: new window.naver.maps.Point(20, 20),
-            }
-          : undefined;
+        // 마커 색상 결정 (우선순위: 북마크 폴더/태그 > 반려동물 동반)
+        let markerColor = "#3b82f6"; // 기본 파란색
+        let markerIcon: any = undefined;
+
+        if (bookmarkInfo) {
+          // 북마크 마커 색상 결정
+          if (bookmarkInfo.folderId) {
+            // 폴더별 색상 (폴더 색상이 있으면 사용, 없으면 기본 색상)
+            markerColor = "#8b5cf6"; // 보라색 (폴더)
+          } else if (bookmarkInfo.tags && bookmarkInfo.tags.length > 0) {
+            // 태그별 색상 (첫 번째 태그의 색상 사용, 없으면 기본 색상)
+            const tagColor = bookmarkInfo.tags[0].color;
+            markerColor = tagColor || "#f59e0b"; // 태그 색상 또는 주황색
+          } else {
+            // 북마크만 있고 폴더/태그 없음
+            markerColor = "#3b82f6"; // 파란색
+          }
+        } else if (isPetFriendly) {
+          // 반려동물 동반 여행지
+          markerColor = "#10b981"; // 초록색
+        }
+
+        // 마커 아이콘 생성
+        if (bookmarkInfo || isPetFriendly) {
+          const iconContent = bookmarkInfo
+            ? `
+              <div style="
+                width: 40px;
+                height: 40px;
+                background-color: ${markerColor};
+                border: 3px solid white;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+                position: relative;
+              ">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                </svg>
+              </div>
+            `
+            : `
+              <div style="
+                width: 40px;
+                height: 40px;
+                background-color: ${markerColor};
+                border: 3px solid white;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+                position: relative;
+              ">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                </svg>
+              </div>
+            `;
+
+          markerIcon = {
+            content: iconContent,
+            anchor: new window.naver.maps.Point(20, 20),
+          };
+        }
 
         // 마커 생성
         const marker = new window.naver.maps.Marker({
@@ -152,18 +219,73 @@ export function NaverMap({
 
         // 인포윈도우 생성
         const overview = travel.overview ? (travel.overview.length > 100 ? travel.overview.substring(0, 100) + "..." : travel.overview) : "";
-        const petFriendlyBadge = isPetFriendly
-          ? `<span style="
+        
+        // 뱃지 생성
+        const badges: string[] = [];
+        
+        if (isPetFriendly) {
+          badges.push(`<span style="
+            display: inline-block;
+            padding: 4px 8px;
+            background-color: #10b981;
+            color: white;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            margin-right: 4px;
+          ">🐾 반려동물 동반 가능</span>`);
+        }
+        
+        if (bookmarkInfo) {
+          if (bookmarkInfo.folderId) {
+            badges.push(`<span style="
               display: inline-block;
               padding: 4px 8px;
-              background-color: #10b981;
+              background-color: #8b5cf6;
               color: white;
               border-radius: 12px;
               font-size: 12px;
               font-weight: 600;
               margin-bottom: 8px;
-            ">🐾 반려동물 동반 가능</span>`
-          : "";
+              margin-right: 4px;
+            ">📁 북마크</span>`);
+          } else {
+            badges.push(`<span style="
+              display: inline-block;
+              padding: 4px 8px;
+              background-color: #3b82f6;
+              color: white;
+              border-radius: 12px;
+              font-size: 12px;
+              font-weight: 600;
+              margin-bottom: 8px;
+              margin-right: 4px;
+            ">⭐ 북마크</span>`);
+          }
+          
+          // 태그 표시
+          if (bookmarkInfo.tags && bookmarkInfo.tags.length > 0) {
+            const tagBadges = bookmarkInfo.tags.map(tag => {
+              const tagColor = tag.color || "#6b7280";
+              return `<span style="
+                display: inline-block;
+                padding: 2px 6px;
+                background-color: ${tagColor};
+                color: white;
+                border-radius: 8px;
+                font-size: 10px;
+                font-weight: 500;
+                margin-right: 4px;
+                margin-bottom: 4px;
+              ">${tag.name}</span>`;
+            }).join("");
+            badges.push(`<div style="margin-bottom: 8px;">${tagBadges}</div>`);
+          }
+        }
+        
+        const badgesHtml = badges.join("");
+        
         const infoWindowContent = `
           <div style="
             padding: 12px;
@@ -176,7 +298,7 @@ export function NaverMap({
               margin-bottom: 8px;
               color: #111;
             ">${travel.title}</h3>
-            ${petFriendlyBadge}
+            ${badgesHtml}
             ${overview ? `<p style="font-size: 14px; color: #666; margin-bottom: 8px;">${overview}</p>` : ""}
             <div style="font-size: 12px; color: #888; margin-bottom: 12px;">
               ${travel.addr1 || ""}

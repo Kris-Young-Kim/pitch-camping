@@ -22,6 +22,9 @@ import { redirect } from "next/navigation";
 import { auth } from "@clerk/nextjs/server";
 import { BookmarkListContent } from "@/components/bookmarks/bookmark-list-content";
 import { CardSkeleton } from "@/components/loading/card-skeleton";
+import { Button } from "@/components/ui/button";
+import { MapPin } from "lucide-react";
+import Link from "next/link";
 
 export const metadata = {
   title: "북마크 | Pitch Travel",
@@ -52,6 +55,22 @@ export default async function BookmarksPage() {
           <p className="text-gray-600 dark:text-gray-400">
             저장한 여행지를 한눈에 확인하고 관리하세요
           </p>
+        </div>
+
+        {/* 액션 버튼 */}
+        <div className="mb-6 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <Button
+              asChild
+              variant="outline"
+              className="flex items-center gap-2"
+            >
+              <a href="/bookmarks/map">
+                <MapPin className="w-4 h-4" />
+                지도 보기
+              </a>
+            </Button>
+          </div>
         </div>
 
         {/* 북마크 목록 */}
