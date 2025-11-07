@@ -112,7 +112,7 @@ export async function getRegionTypeStats(): Promise<RegionTypeStatsResult> {
     // 지역별 통계
     const { data: travelsData } = await supabase
       .from("travels")
-      .select("contentid, areacode, title");
+      .select("contentid, areacode, title, contenttypeid");
 
     const { data: statsData } = await supabase
       .from("travel_stats")

@@ -147,7 +147,7 @@ export async function getUserBehaviorAnalytics(): Promise<UserBehaviorAnalyticsR
     // user_activity에서 activity_type='view'인 것들을 경로로 간주
     const { data: viewActivities } = await supabase
       .from("user_activity")
-      .select("content_id, activity_type")
+      .select("content_id, activity_type, user_id")
       .eq("activity_type", "view");
 
     const pathCounts = new Map<string, number>();

@@ -62,6 +62,23 @@ export async function generateMetadata({
       ) as TravelSiteDetail[];
       detail = items[0] || null;
     } catch (tourApiError) {
+      // TourAPI 실패 (500 에러는 조용히 처리)
+      const tourApiErrorObj = tourApiError instanceof Error 
+        ? tourApiError 
+        : new Error(String(tourApiError));
+      
+      // 500 에러는 일시적 서버 오류이므로 조용히 처리 (Supabase fallback으로 진행)
+      const is500Error = tourApiErrorObj.message.includes("500") || 
+        (tourApiErrorObj as Error & { status?: number }).status === 500;
+      
+      // 500 에러가 아닌 경우에만 로깅 (generateMetadata는 조용히 처리)
+      // if (!is500Error) {
+      //   console.warn("[generateMetadata] TourAPI 조회 실패:", {
+      //     contentId,
+      //     error: tourApiErrorObj.message,
+      //   });
+      // }
+
       // 2. Supabase fallback (에러는 조용히 처리)
       try {
         const serviceClient = getServiceRoleClient();
@@ -144,7 +161,15 @@ export async function generateMetadata({
   } catch (error) {
     // generateMetadata에서 에러가 발생해도 기본 메타데이터 반환
     // 이렇게 하면 페이지가 렌더링될 수 있음
-    console.error("[generateMetadata] 메타데이터 생성 실패:", error);
+    // 500 에러는 조용히 처리 (TourAPI 일시적 오류)
+    const errorObj = error instanceof Error ? error : new Error(String(error));
+    const is500Error = errorObj.message.includes("500") || 
+      (errorObj as Error & { status?: number }).status === 500;
+    
+    if (!is500Error) {
+      console.error("[generateMetadata] 메타데이터 생성 실패:", error);
+    }
+    
     return {
       title: "여행지 상세 정보 | Pitch Travel",
       description: "여행지 상세 정보를 확인하세요",
