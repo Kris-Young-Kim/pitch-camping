@@ -9,7 +9,7 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { getTravelSafetyGuidelines } from "@/lib/api/safety-guidelines";
+import { getTravelSafetyGuidelines, TravelSafetyGuidelineFilter } from "@/lib/api/safety-guidelines";
 import { logError, logInfo } from "@/lib/utils/logger";
 
 export async function GET(request: NextRequest) {
@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
     const limit = searchParams.get("limit") ? parseInt(searchParams.get("limit")!) : undefined;
     const offset = searchParams.get("offset") ? parseInt(searchParams.get("offset")!) : undefined;
 
-    const filter: any = {};
+    const filter: TravelSafetyGuidelineFilter = {};
     if (travel_type && travel_type !== "all") {
       filter.travel_type = travel_type;
     }
