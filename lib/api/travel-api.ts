@@ -146,8 +146,12 @@ export class TravelApiClient {
         // 에러 객체에 status 정보 포함 (catch 블록에서 500 에러 판단용)
         const apiError = new Error(
           `API 요청 실패: ${response.status} ${response.statusText}${errorDetail}`
-        ) as Error & { status?: number };
+        ) as Error & { status?: number; silent?: boolean };
         apiError.status = response.status;
+        // 500 에러는 조용히 처리 (fallback이 있으므로)
+        if (response.status === 500) {
+          apiError.silent = true;
+        }
         throw apiError;
       }
 
@@ -227,6 +231,11 @@ export class TravelApiClient {
           error,
           { endpoint, params }
         );
+      }
+      
+      // 500 에러인 경우 silent 플래그 추가
+      if (is500Error && error instanceof Error) {
+        (error as Error & { silent?: boolean }).silent = true;
       }
       
       throw error;

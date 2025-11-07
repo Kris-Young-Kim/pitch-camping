@@ -126,8 +126,8 @@ export async function getUserGrowthPrediction(
       return { success: false, error: "관리자 권한이 필요합니다." };
     }
 
-    // 최근 90일 데이터 조회
-    const statsResult = await getTimeSeriesStats("90days");
+    // 최근 90일 데이터 조회 (3개월)
+    const statsResult = await getTimeSeriesStats("3months");
     if (!statsResult.success || !statsResult.data) {
       console.warn("[getUserGrowthPrediction] 통계 데이터 없음");
       console.groupEnd();
@@ -445,7 +445,7 @@ export async function getRevenuePrediction(
     }
 
     // 최근 3개월 데이터 조회
-    const statsResult = await getTimeSeriesStats("90days");
+    const statsResult = await getTimeSeriesStats("3months");
     if (!statsResult.success || !statsResult.data) {
       console.warn("[getRevenuePrediction] 통계 데이터 없음");
       console.groupEnd();

@@ -180,7 +180,6 @@ export default async function TravelDetailPage({
     }
 
     // 공통정보 조회 (TourAPI 우선, 실패 시 Supabase fallback)
-    console.log("[TravelDetailPage] 여행지 상세 조회 시작:", contentId);
     try {
       const commonResponse = await travelApi.getTravelDetail(contentId);
       const commonItems = normalizeTravelItems(
@@ -213,14 +212,21 @@ export default async function TravelDetailPage({
         throw new Error("TourAPI 응답에 데이터가 없습니다.");
       }
     } catch (tourApiError) {
-      // TourAPI 실패 로깅
+      // TourAPI 실패 (500 에러는 조용히 처리, 다른 에러만 로깅)
       const tourApiErrorObj = tourApiError instanceof Error 
         ? tourApiError 
         : new Error(String(tourApiError));
-      console.warn("[TravelDetailPage] TourAPI 조회 실패:", {
-        contentId,
-        error: tourApiErrorObj.message,
-      });
+      
+      // 500 에러는 일시적 서버 오류이므로 조용히 처리 (Supabase fallback으로 진행)
+      const is500Error = tourApiErrorObj.message.includes("500") || 
+        (tourApiErrorObj as Error & { status?: number }).status === 500;
+      
+      if (!is500Error) {
+        console.warn("[TravelDetailPage] TourAPI 조회 실패:", {
+          contentId,
+          error: tourApiErrorObj.message,
+        });
+      }
 
       // Supabase fallback
       try {
