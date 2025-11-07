@@ -29,6 +29,7 @@ import { WeatherWidget } from "@/components/travel-detail/weather-widget";
 import { TransportInfo } from "@/components/travel-detail/transport-info";
 import { SafetyRecommendations } from "@/components/travel-detail/safety-recommendations";
 import { PetFriendlyInfo } from "@/components/travel-detail/pet-friendly-info";
+import { PetFriendlyReviewSection } from "@/components/travel-detail/pet-friendly-review-section";
 import { AdSidebar } from "@/components/ads/ad-sidebar";
 import { LocalNav } from "@/components/navigation/local-nav";
 import { SideNav } from "@/components/navigation/side-nav";
@@ -402,10 +403,13 @@ export default async function TravelDetailPage({
               </div>
             </div>
 
-            {/* 반려동물 동반 정보 */}
-            {petFriendly && (
-              <PetFriendlyInfo contentId={contentId} petFriendly={petFriendly} />
-            )}
+        {/* 반려동물 동반 정보 */}
+        {petFriendly && (
+          <>
+            <PetFriendlyInfo contentId={contentId} petFriendly={petFriendly} />
+            <PetFriendlyReviewSection contentId={contentId} />
+          </>
+        )}
           </div>
 
           {/* 우측 컬럼 - 사이드바 (1/3) */}

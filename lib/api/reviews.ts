@@ -30,6 +30,10 @@ export interface Review {
   updated_at: string;
   helpful_count?: number;
   user_name?: string;
+  // 반려동물 동반 여행 관련 필드
+  pet_friendly_experience?: boolean;
+  pet_friendly_rating?: number | null;
+  pet_friendly_comment?: string | null;
 }
 
 export interface ReviewStats {
@@ -46,11 +50,17 @@ export interface ReviewStats {
  * @param contentId 고캠핑 API contentId
  * @param rating 평점 (1-5)
  * @param comment 리뷰 내용 (선택적)
+ * @param petFriendlyExperience 반려동물 동반 여행 경험 여부 (선택적)
+ * @param petFriendlyRating 반려동물 동반 만족도 (1-5, petFriendlyExperience가 true일 때만 사용)
+ * @param petFriendlyComment 반려동물 동반 경험 상세 설명 (선택적)
  */
 export async function createReview(
   contentId: string,
   rating: number,
-  comment?: string
+  comment?: string,
+  petFriendlyExperience?: boolean,
+  petFriendlyRating?: number,
+  petFriendlyComment?: string
 ): Promise<{ success: boolean; error?: string }> {
   console.group(`[Reviews] 리뷰 작성: ${contentId}, rating=${rating}`);
 
@@ -88,12 +98,25 @@ export async function createReview(
       };
     }
 
+    // 반려동물 동반 만족도 검증
+    if (petFriendlyExperience && petFriendlyRating !== undefined) {
+      if (petFriendlyRating < 1 || petFriendlyRating > 5) {
+        return {
+          success: false,
+          error: "반려동물 동반 만족도는 1-5 사이여야 합니다",
+        };
+      }
+    }
+
     // 리뷰 작성
     const { error: insertError } = await supabase.from("reviews").insert({
       user_id: userData.id,
       content_id: contentId,
       rating,
       comment: comment || null,
+      pet_friendly_experience: petFriendlyExperience || false,
+      pet_friendly_rating: petFriendlyExperience && petFriendlyRating ? petFriendlyRating : null,
+      pet_friendly_comment: petFriendlyComment || null,
     });
 
     if (insertError) {
@@ -277,7 +300,7 @@ export async function getReviews(
   try {
     const supabase = await createClerkSupabaseClient();
 
-    const { data, error } = await supabase
+    let query = supabase
       .from("reviews")
       .select(
         `
@@ -288,10 +311,20 @@ export async function getReviews(
         comment,
         created_at,
         updated_at,
+        pet_friendly_experience,
+        pet_friendly_rating,
+        pet_friendly_comment,
         users!inner(name)
       `
       )
-      .eq("content_id", contentId)
+      .eq("content_id", contentId);
+
+    // 반려동물 동반 리뷰만 필터링
+    if (petFriendlyOnly) {
+      query = query.eq("pet_friendly_experience", true);
+    }
+
+    const { data, error } = await query
       .order("created_at", { ascending: false })
       .range(offset, offset + limit - 1);
 
@@ -318,6 +351,9 @@ export async function getReviews(
           updated_at: review.updated_at,
           helpful_count: count || 0,
           user_name: review.users?.name || "익명",
+          pet_friendly_experience: review.pet_friendly_experience || false,
+          pet_friendly_rating: review.pet_friendly_rating || null,
+          pet_friendly_comment: review.pet_friendly_comment || null,
         };
       })
     );
