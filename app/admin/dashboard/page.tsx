@@ -20,6 +20,7 @@ import { auth } from "@clerk/nextjs/server";
 import { getAdminStats } from "@/actions/admin-stats";
 import { StatsCard } from "@/components/admin/stats-card";
 import { PopularTravels } from "@/components/admin/popular-travels";
+import { EnhancedDashboard } from "@/components/admin/enhanced-dashboard";
 import { Users, Eye, Bookmark, MessageSquare } from "lucide-react";
 
 export default async function AdminDashboardPage() {
@@ -113,9 +114,12 @@ export default async function AdminDashboardPage() {
         </div>
 
         {/* 인기 여행지 목록 */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
           <PopularTravels travels={stats.popularTravels} />
         </div>
+
+        {/* 고도화된 대시보드 */}
+        <EnhancedDashboard />
       </div>
     </main>
   );
