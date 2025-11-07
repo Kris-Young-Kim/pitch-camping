@@ -30,7 +30,7 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { Menu, X, Home, Shield, MessageSquare, Bookmark, BarChart3 } from "lucide-react";
+import { Menu, X, Home, Shield, MessageSquare, Bookmark, BarChart3, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const mainMenuItems = [
