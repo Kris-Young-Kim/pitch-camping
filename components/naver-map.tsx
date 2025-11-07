@@ -60,6 +60,18 @@ export function NaverMap({
   const infoWindowsRef = useRef<any[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const travelsRef = useRef<TravelSite[]>([]);
+  const prevTravelsRef = useRef<string>(""); // 이전 travels의 contentid 문자열
+  const onMarkerClickRef = useRef(onMarkerClick);
+
+  // travels와 onMarkerClick을 ref로 저장하여 안정화
+  useEffect(() => {
+    travelsRef.current = travels;
+  }, [travels]);
+
+  useEffect(() => {
+    onMarkerClickRef.current = onMarkerClick;
+  }, [onMarkerClick]);
 
   // 마커 추가 함수 (initializeMap보다 먼저 정의)
   const addMarkers = useCallback(() => {
@@ -67,7 +79,8 @@ export function NaverMap({
       return;
     }
 
-    console.log("[NaverMap] 마커 추가 시작:", travels.length);
+    const currentTravels = travelsRef.current;
+    console.log("[NaverMap] 마커 추가 시작:", currentTravels.length);
 
     // 기존 마커 제거
     markersRef.current.forEach((marker) => marker.setMap(null));
@@ -75,7 +88,7 @@ export function NaverMap({
     infoWindowsRef.current.forEach((infoWindow) => infoWindow.close());
     infoWindowsRef.current = [];
 
-    travels.forEach((travel) => {
+    currentTravels.forEach((travel) => {
       try {
         // 좌표 파싱 (TourAPI는 WGS84 좌표계 사용)
         const coords = parseCoordinates(travel.mapx, travel.mapy);
@@ -137,8 +150,8 @@ export function NaverMap({
           // 인포윈도우 열기
           infoWindow.open(mapInstanceRef.current, marker);
 
-          // 콜백 호출
-          onMarkerClick?.(travel);
+          // 콜백 호출 (ref를 통해 안정적으로 호출)
+          onMarkerClickRef.current?.(travel);
         });
 
         markersRef.current.push(marker);
@@ -149,7 +162,7 @@ export function NaverMap({
     });
 
     console.log("[NaverMap] 마커 추가 완료:", markersRef.current.length);
-  }, [travels, onMarkerClick]);
+  }, []); // 의존성 제거 - ref를 통해 travels와 onMarkerClick 접근
 
   // 지도 초기화 함수
   const initializeMap = useCallback(() => {
@@ -181,14 +194,14 @@ export function NaverMap({
       setIsLoaded(true);
 
       // 마커 표시
-      if (travels.length > 0) {
+      if (travelsRef.current.length > 0) {
         addMarkers();
       }
     } catch (err) {
       console.error("[NaverMap] 지도 초기화 오류:", err);
       setError("지도를 초기화하는데 실패했습니다.");
     }
-  }, [center, zoom, travels.length, addMarkers]);
+  }, [center, zoom, addMarkers]);
 
   // 네이버 지도 스크립트 로드
   useEffect(() => {
@@ -280,35 +293,59 @@ export function NaverMap({
     }
   }, [selectedTravelId, travels, isLoaded]);
 
-  // 여행지 목록이 변경되면 마커 업데이트
+  // 여행지 목록이 변경되면 마커 업데이트 (실제 변경 시에만)
   useEffect(() => {
-    if (isLoaded && travels.length > 0) {
-      addMarkers();
+    if (!isLoaded) {
+      return;
+    }
 
-      // 모든 마커를 보기 위해 지도 범위 조정
-      if (markersRef.current.length > 0 && mapInstanceRef.current) {
-        const bounds = new window.naver.maps.LatLngBounds();
-        let hasValidCoords = false;
+    const currentTravels = travelsRef.current;
+    
+    // 이전 travels와 비교하여 실제로 변경되었는지 확인
+    const currentTravelIds = currentTravels.map(t => t.contentid).sort().join(',');
+    const prevTravelIds = prevTravelsRef.current;
 
-        travels.forEach((travel) => {
-          const coords = parseCoordinates(travel.mapx, travel.mapy);
-          if (coords) {
-            bounds.extend(new window.naver.maps.LatLng(coords.lat, coords.lng));
-            hasValidCoords = true;
-          }
-        });
+    // 실제로 변경된 경우에만 마커 업데이트
+    if (currentTravelIds !== prevTravelIds) {
+      console.log("[NaverMap] 여행지 목록 변경 감지, 마커 업데이트");
+      
+      // 이전 travels ID 저장
+      prevTravelsRef.current = currentTravelIds;
+      
+      if (currentTravels.length > 0) {
+        addMarkers();
 
-        // 유효한 좌표가 있는 경우에만 지도 범위 조정
-        if (hasValidCoords) {
-          try {
-            mapInstanceRef.current.fitBounds(bounds);
-          } catch (err) {
-            console.error("[NaverMap] 지도 범위 조정 실패:", err);
+        // 모든 마커를 보기 위해 지도 범위 조정
+        if (markersRef.current.length > 0 && mapInstanceRef.current) {
+          const bounds = new window.naver.maps.LatLngBounds();
+          let hasValidCoords = false;
+
+          currentTravels.forEach((travel) => {
+            const coords = parseCoordinates(travel.mapx, travel.mapy);
+            if (coords) {
+              bounds.extend(new window.naver.maps.LatLng(coords.lat, coords.lng));
+              hasValidCoords = true;
+            }
+          });
+
+          // 유효한 좌표가 있는 경우에만 지도 범위 조정
+          if (hasValidCoords) {
+            try {
+              mapInstanceRef.current.fitBounds(bounds);
+            } catch (err) {
+              console.error("[NaverMap] 지도 범위 조정 실패:", err);
+            }
           }
         }
+      } else {
+        // travels가 비어있으면 마커 제거
+        markersRef.current.forEach((marker) => marker.setMap(null));
+        markersRef.current = [];
+        infoWindowsRef.current.forEach((infoWindow) => infoWindow.close());
+        infoWindowsRef.current = [];
       }
     }
-  }, [travels, isLoaded, addMarkers]);
+  }, [travels, isLoaded, addMarkers]); // travels는 여전히 의존성에 포함 (변경 감지용)
 
   return (
     <div className={`relative w-full h-full min-h-[400px] md:min-h-[600px] ${className}`} role="application" aria-label="네이버 지도">
