@@ -446,11 +446,12 @@
     - [x] 비용 분석 UI 컴포넌트 (CostAnalysis)
     - [ ] Vercel 사용량 추적 (함수 호출 수, 대역폭, 빌드 시간) (Vercel API 통합 필요)
     - [ ] Supabase 사용량 추적 (데이터베이스 크기, API 호출 수, Storage 사용량) (Supabase API 통합 필요)
-  - [ ] 예측 분석
-    - 사용자 증가 예측 (선형 회귀, 시계열 분석)
-    - 인기 여행지 예측 (계절성, 트렌드 분석)
-    - 트래픽 예측 (피크 시간대, 계절별 트래픽)
-    - 수익 예측 (광고 수익, 예약 수수료 등)
+  - [x] 예측 분석
+    - [x] 사용자 증가 예측 (선형 회귀, 시계열 분석) (getUserGrowthPrediction)
+    - [x] 인기 여행지 예측 (계절성, 트렌드 분석) (getPopularTravelPrediction)
+    - [x] 트래픽 예측 (피크 시간대, 계절별 트래픽) (getTrafficPrediction)
+    - [x] 수익 예측 (광고 수익, 예약 수수료 등) (getRevenuePrediction)
+    - [x] 예측 분석 UI 컴포넌트 (Predictions)
   - [ ] 리포트 생성
     - 일일/주간/월간 리포트 자동 생성
     - 리포트 이메일 발송 (관리자에게)

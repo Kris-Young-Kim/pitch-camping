@@ -19,6 +19,7 @@ import { UserBehaviorAnalytics } from "@/components/admin/user-behavior-analytic
 import { DetailedRegionTypeStats } from "@/components/admin/detailed-region-type-stats";
 import { PerformanceMonitoring } from "@/components/admin/performance-monitoring";
 import { CostAnalysis } from "@/components/admin/cost-analysis";
+import { Predictions } from "@/components/admin/predictions";
 import { getTimeSeriesStats, type TimePeriod } from "@/actions/admin-stats/get-time-series-stats";
 import { getRegionTypeStats } from "@/actions/admin-stats/get-region-type-stats";
 import { toast } from "sonner";
@@ -219,6 +220,9 @@ export function EnhancedDashboard() {
 
       {/* 비용 분석 */}
       <CostAnalysis />
+
+      {/* 예측 분석 */}
+      <Predictions />
     </div>
   );
 }
