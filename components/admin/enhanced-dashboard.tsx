@@ -22,6 +22,7 @@ import { CostAnalysis } from "@/components/admin/cost-analysis";
 import { Predictions } from "@/components/admin/predictions";
 import { ReportGenerator } from "@/components/admin/report-generator";
 import { AlertSystem } from "@/components/admin/alert-system";
+import { DataExport } from "@/components/admin/data-export";
 import { getTimeSeriesStats, type TimePeriod } from "@/actions/admin-stats/get-time-series-stats";
 import { getRegionTypeStats } from "@/actions/admin-stats/get-region-type-stats";
 import { toast } from "sonner";
@@ -231,6 +232,9 @@ export function EnhancedDashboard() {
 
       {/* 알림 시스템 */}
       <AlertSystem />
+
+      {/* 데이터 내보내기 */}
+      <DataExport />
     </div>
   );
 }
