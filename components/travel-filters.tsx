@@ -142,8 +142,8 @@ export function TravelFilters({ onFilterChange }: TravelFiltersProps) {
     sortOrder !== SORT_OPTIONS.TITLE;
 
   return (
-    <div className="space-y-5 p-6 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700" role="region" aria-label="여행지 필터">
-      <div className="flex items-center justify-between pb-2 border-b border-gray-200 dark:border-gray-700">
+    <div className="p-6 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700" role="region" aria-label="여행지 필터">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 pb-4 border-b border-gray-200 dark:border-gray-700">
         <div className="flex items-center gap-2.5">
           <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
             <Filter className="w-5 h-5 text-blue-600 dark:text-blue-400" aria-hidden="true" />
@@ -155,7 +155,7 @@ export function TravelFilters({ onFilterChange }: TravelFiltersProps) {
             variant="ghost"
             size="sm"
             onClick={resetFilters}
-            className="text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            className="text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 self-start md:self-auto"
             aria-label="필터 초기화"
           >
             <X className="w-4 h-4 mr-1" aria-hidden="true" />
@@ -164,72 +164,77 @@ export function TravelFilters({ onFilterChange }: TravelFiltersProps) {
         )}
       </div>
 
-      {/* 지역 필터 */}
-      <div className="space-y-2.5">
-        <Label htmlFor="region" className="text-sm font-semibold text-gray-900 dark:text-white">지역</Label>
-        <Select value={region} onValueChange={setRegion}>
-          <SelectTrigger id="region" className="h-11">
-            <SelectValue placeholder="지역 선택" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value={REGIONS.ALL}>전체</SelectItem>
-            {REGION_LIST.map((r) => (
-              <SelectItem key={r} value={r}>
-                {r}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
+      {/* 필터 옵션 - 가로 배치 */}
+      <div className="flex flex-col md:flex-row gap-4 pt-4">
+        {/* 지역 필터 */}
+        <div className="flex-1 min-w-0">
+          <Label htmlFor="region" className="text-sm font-semibold text-gray-900 dark:text-white mb-2 block">지역</Label>
+          <Select value={region} onValueChange={setRegion}>
+            <SelectTrigger id="region" className="h-11 w-full">
+              <SelectValue placeholder="지역 선택" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value={REGIONS.ALL}>전체</SelectItem>
+              {REGION_LIST.map((r) => (
+                <SelectItem key={r} value={r}>
+                  {r}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
 
-      {/* 여행지 타입 필터 */}
-      <div className="space-y-2.5">
-        <Label htmlFor="type" className="text-sm font-semibold text-gray-900 dark:text-white">여행지 타입</Label>
-        <Select value={travelType} onValueChange={setTravelType}>
-          <SelectTrigger id="type" className="h-11">
-            <SelectValue placeholder="여행지 타입 선택" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value={TRAVEL_TYPES.ALL}>전체</SelectItem>
-            {TRAVEL_TYPE_LIST.map((type) => (
-              <SelectItem key={type} value={type}>
-                {type}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
+        {/* 여행지 타입 필터 */}
+        <div className="flex-1 min-w-0">
+          <Label htmlFor="type" className="text-sm font-semibold text-gray-900 dark:text-white mb-2 block">여행지 타입</Label>
+          <Select value={travelType} onValueChange={setTravelType}>
+            <SelectTrigger id="type" className="h-11 w-full">
+              <SelectValue placeholder="여행지 타입 선택" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value={TRAVEL_TYPES.ALL}>전체</SelectItem>
+              {TRAVEL_TYPE_LIST.map((type) => (
+                <SelectItem key={type} value={type}>
+                  {type}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
 
-      {/* 정렬 옵션 */}
-      <div className="space-y-2.5">
-        <Label htmlFor="sort" className="text-sm font-semibold text-gray-900 dark:text-white">정렬</Label>
-        <Select value={sortOrder} onValueChange={setSortOrder}>
-          <SelectTrigger id="sort" className="h-11">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {Object.entries(SORT_OPTION_LABELS).map(([value, label]) => (
-              <SelectItem key={value} value={value}>
-                {label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
+        {/* 정렬 옵션 */}
+        <div className="flex-1 min-w-0">
+          <Label htmlFor="sort" className="text-sm font-semibold text-gray-900 dark:text-white mb-2 block">정렬</Label>
+          <Select value={sortOrder} onValueChange={setSortOrder}>
+            <SelectTrigger id="sort" className="h-11 w-full">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {Object.entries(SORT_OPTION_LABELS).map(([value, label]) => (
+                <SelectItem key={value} value={value}>
+                  {label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
 
-      {/* 검색 버튼 */}
-      <Button
-        onClick={applyFilters}
-        className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold h-11"
-        aria-label="필터 적용"
-      >
-        <Search className="w-4 h-4 mr-2" aria-hidden="true" />
-        검색
-      </Button>
+        {/* 검색 버튼 */}
+        <div className="flex items-end">
+          <Button
+            onClick={applyFilters}
+            className="w-full md:w-auto bg-blue-600 hover:bg-blue-700 text-white font-semibold h-11 px-6"
+            aria-label="필터 적용"
+          >
+            <Search className="w-4 h-4 mr-2" aria-hidden="true" />
+            검색
+          </Button>
+        </div>
+      </div>
 
       {/* 활성 필터 표시 */}
       {hasActiveFilters && (
-        <div className="flex flex-wrap gap-2 pt-4 border-t border-gray-200 dark:border-gray-700">
+        <div className="flex flex-wrap gap-2 pt-4 mt-4 border-t border-gray-200 dark:border-gray-700">
           {region !== REGIONS.ALL && (
             <span className="px-3 py-1.5 text-xs font-medium bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-200 rounded-full border border-blue-200 dark:border-blue-800">
               지역: {region}
