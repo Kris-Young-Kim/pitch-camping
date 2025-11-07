@@ -436,13 +436,16 @@
     - [x] 성능 메트릭 수집 시스템 (performance-tracker.ts, API Routes)
     - [ ] 데이터베이스 쿼리 성능 모니터링 (추후 구현)
     - [ ] 성능 임계값 알림 (응답 시간 초과, 에러율 증가) (추후 구현)
-  - [ ] 비용 분석
-    - Vercel 사용량 추적 (함수 호출 수, 대역폭, 빌드 시간)
-    - Supabase 사용량 추적 (데이터베이스 크기, API 호출 수, Storage 사용량)
-    - 네이버 지도 API 호출 수 추적
-    - TourAPI 호출 수 추적
-    - 월별 비용 추정 및 예측
-    - 비용 최적화 제안
+  - [x] 비용 분석
+    - [x] API 사용량 추적 시스템 (api_usage_logs 테이블)
+    - [x] 서비스별 사용량 통계 (service_usage_stats 테이블)
+    - [x] TourAPI 호출 수 추적 (trackTourApiUsageServer)
+    - [x] 네이버 지도 API 호출 수 추적 (trackNaverMapUsage)
+    - [x] 월별 비용 추정 및 예측 (getCostAnalysis)
+    - [x] 비용 최적화 제안 (costOptimization)
+    - [x] 비용 분석 UI 컴포넌트 (CostAnalysis)
+    - [ ] Vercel 사용량 추적 (함수 호출 수, 대역폭, 빌드 시간) (Vercel API 통합 필요)
+    - [ ] Supabase 사용량 추적 (데이터베이스 크기, API 호출 수, Storage 사용량) (Supabase API 통합 필요)
   - [ ] 예측 분석
     - 사용자 증가 예측 (선형 회귀, 시계열 분석)
     - 인기 여행지 예측 (계절성, 트렌드 분석)

@@ -24,6 +24,7 @@ import type {
 import { measureApiResponse } from "@/lib/utils/performance";
 import { logError, logInfo } from "@/lib/utils/logger";
 import { trackApiRequest } from "@/lib/utils/metrics";
+import { trackTourApiUsageServer } from "@/lib/utils/cost-tracker-server";
 
 /**
  * 한국관광공사 TourAPI 클라이언트 클래스
@@ -179,6 +180,23 @@ export class TravelApiClient {
       }
 
       trackApiRequest(true, responseTime); // 성공 추적
+      
+      // TourAPI 사용량 추적 (비동기, 실패해도 무시)
+      const operationType = endpoint.includes("areaBasedList")
+        ? "list_travel"
+        : endpoint.includes("detailCommon")
+        ? "detail_travel"
+        : endpoint.includes("detailIntro")
+        ? "detail_travel"
+        : endpoint.includes("searchKeyword")
+        ? "search_travel"
+        : endpoint.includes("detailImage")
+        ? "image_travel"
+        : "api_request";
+      trackTourApiUsageServer(operationType as any, endpoint, { params }).catch(() => {
+        // 실패해도 무시
+      });
+      
       logInfo(`API 요청 성공: ${endpoint}`, { params });
       return data as T;
     } catch (error) {
