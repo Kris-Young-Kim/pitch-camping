@@ -34,7 +34,7 @@ export async function exportBookmarks(
   input: ExportBookmarksInput
 ): Promise<ExportBookmarksResult> {
   console.group("[exportBookmarks] 북마크 내보내기 시작");
-  logInfo("[exportBookmarks] 내보내기 요청", input);
+  logInfo("[exportBookmarks] 내보내기 요청", { format: input.format });
 
   try {
     const { userId } = await auth();
