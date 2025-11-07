@@ -112,6 +112,24 @@ export function TravelCard({ travel, onCardClick }: TravelCardProps) {
           </div>
         )}
 
+        {/* 북마크 태그 (북마크 목록에서만 표시) */}
+        {"tags" in travel && travel.tags && travel.tags.length > 0 && (
+          <div className="flex items-center gap-1.5 flex-wrap pt-2" role="list" aria-label="북마크 태그">
+            {travel.tags.map((tag) => (
+              <div
+                key={tag.id}
+                className="flex items-center gap-1 px-2 py-0.5 text-xs font-medium text-gray-700 dark:text-gray-300 bg-blue-50 dark:bg-blue-900/30 rounded-full border border-blue-200 dark:border-blue-800"
+                style={tag.color ? { borderColor: tag.color, backgroundColor: `${tag.color}20` } : undefined}
+                role="listitem"
+              >
+                <span style={tag.color ? { color: tag.color } : undefined}>
+                  {tag.name}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
+
         {/* 연락처 정보 (있는 경우) */}
         {(travel.tel || travel.homepage) && (
           <div className="flex items-center gap-4 text-xs text-gray-500 dark:text-gray-400 pt-3 border-t border-gray-100 dark:border-gray-700">

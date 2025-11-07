@@ -28,6 +28,11 @@ import { logError, logInfo } from "@/lib/utils/logger";
 export interface BookmarkWithTravel extends TravelSite {
   bookmarkId: string;
   bookmarkedAt: string;
+  tags?: Array<{
+    id: string;
+    name: string;
+    color: string | null;
+  }>;
 }
 
 /**
@@ -43,6 +48,7 @@ export async function getBookmarks(
     contentTypeId?: string;
     keyword?: string;
     folderId?: string | null;
+    tagIds?: string[];
   }
 ): Promise<BookmarkWithTravel[]> {
   console.group("[getBookmarks] 북마크 목록 조회 시작");
@@ -174,6 +180,36 @@ export async function getBookmarks(
 
     console.log("[getBookmarks] 조회된 여행지 개수:", travelDetails.length);
 
+    // 북마크별 태그 조회
+    const bookmarkIds = bookmarks.map((b) => b.id);
+    const { data: tagRelations, error: tagRelationsError } = await supabase
+      .from("bookmark_tag_relations")
+      .select("bookmark_id, tag_id, bookmark_tags(id, name, color)")
+      .in("bookmark_id", bookmarkIds);
+
+    if (tagRelationsError) {
+      console.warn("[getBookmarks] 태그 관계 조회 실패:", tagRelationsError);
+    }
+
+    // 북마크별 태그 그룹화
+    const tagsByBookmark = new Map<string, Array<{ id: string; name: string; color: string | null }>>();
+    if (tagRelations) {
+      tagRelations.forEach((relation) => {
+        const bookmarkId = relation.bookmark_id;
+        const tag = relation.bookmark_tags as { id: string; name: string; color: string | null } | null;
+        if (tag) {
+          if (!tagsByBookmark.has(bookmarkId)) {
+            tagsByBookmark.set(bookmarkId, []);
+          }
+          tagsByBookmark.get(bookmarkId)!.push({
+            id: tag.id,
+            name: tag.name,
+            color: tag.color,
+          });
+        }
+      });
+    }
+
     // 북마크 정보와 여행지 정보 결합
     const bookmarksWithTravel: BookmarkWithTravel[] = bookmarks
       .map((bookmark) => {
@@ -186,6 +222,7 @@ export async function getBookmarks(
           ...travel,
           bookmarkId: bookmark.id,
           bookmarkedAt: bookmark.created_at,
+          tags: tagsByBookmark.get(bookmark.id) || [],
         };
       })
       .filter((item): item is BookmarkWithTravel => item !== null);
@@ -211,6 +248,15 @@ export async function getBookmarks(
             b.addr1?.toLowerCase().includes(keyword) ||
             b.addr2?.toLowerCase().includes(keyword)
         );
+      }
+      if (filter.tagIds && filter.tagIds.length > 0) {
+        // 선택된 태그 중 하나라도 포함된 북마크만 필터링
+        filteredBookmarks = filteredBookmarks.filter((b) => {
+          if (!b.tags || b.tags.length === 0) return false;
+          return filter.tagIds!.some((tagId) =>
+            b.tags!.some((tag) => tag.id === tagId)
+          );
+        });
       }
     }
 

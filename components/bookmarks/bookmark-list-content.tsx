@@ -35,6 +35,7 @@ import { AlertCircle, Bookmark, Search, Filter } from "lucide-react";
 import { getBookmarks, type BookmarkWithTravel } from "@/actions/bookmarks/get-bookmarks";
 import { REGIONS, REGION_LIST, REGION_CODES, TRAVEL_TYPES, TRAVEL_TYPE_LIST, TRAVEL_TYPE_CODES } from "@/constants/travel";
 import { FolderList } from "@/components/bookmarks/folder-list";
+import { TagList } from "@/components/bookmarks/tag-list";
 import { toast } from "sonner";
 
 type SortOption = "created_at" | "title" | "region" | "type";
@@ -62,6 +63,10 @@ export function BookmarkListContent() {
   const [selectedFolderId, setSelectedFolderId] = useState<string | null>(
     searchParams.get("folderId") || null
   );
+  const [selectedTagIds, setSelectedTagIds] = useState<string[]>(() => {
+    const tagIdsParam = searchParams.get("tagIds");
+    return tagIdsParam ? tagIdsParam.split(",") : [];
+  });
 
   // 북마크 목록 조회
   useEffect(() => {
@@ -79,6 +84,7 @@ export function BookmarkListContent() {
           ...(contentTypeId && { contentTypeId }),
           ...(keyword && { keyword }),
           ...(selectedFolderId !== null && { folderId: selectedFolderId }),
+          ...(selectedTagIds.length > 0 && { tagIds: selectedTagIds }),
         };
 
         const data = await getBookmarks(sortBy, filter);
@@ -99,7 +105,7 @@ export function BookmarkListContent() {
     };
 
     fetchBookmarks();
-  }, [sortBy, areaCode, contentTypeId, keyword, selectedFolderId]);
+  }, [sortBy, areaCode, contentTypeId, keyword, selectedFolderId, selectedTagIds]);
 
   // URL 쿼리 파라미터 업데이트
   useEffect(() => {
@@ -109,9 +115,10 @@ export function BookmarkListContent() {
     if (contentTypeId) params.set("contentTypeId", contentTypeId);
     if (keyword) params.set("keyword", keyword);
     if (selectedFolderId) params.set("folderId", selectedFolderId);
+    if (selectedTagIds.length > 0) params.set("tagIds", selectedTagIds.join(","));
 
     router.replace(`/bookmarks?${params.toString()}`, { scroll: false });
-  }, [sortBy, areaCode, contentTypeId, keyword, selectedFolderId, router]);
+  }, [sortBy, areaCode, contentTypeId, keyword, selectedFolderId, selectedTagIds, router]);
 
   // 필터 초기화
   const handleResetFilters = () => {
@@ -120,9 +127,18 @@ export function BookmarkListContent() {
     setContentTypeId("");
     setKeyword("");
     setSelectedFolderId(null);
+    setSelectedTagIds([]);
   };
 
-  const hasActiveFilters = areaCode || contentTypeId || keyword || selectedFolderId !== null;
+  const handleTagToggle = (tagId: string) => {
+    setSelectedTagIds((prev) =>
+      prev.includes(tagId)
+        ? prev.filter((id) => id !== tagId)
+        : [...prev, tagId]
+    );
+  };
+
+  const hasActiveFilters = areaCode || contentTypeId || keyword || selectedFolderId !== null || selectedTagIds.length > 0;
 
   if (loading) {
     return (
@@ -170,6 +186,27 @@ export function BookmarkListContent() {
             ...(contentTypeId && { contentTypeId }),
             ...(keyword && { keyword }),
             ...(selectedFolderId !== null && { folderId: selectedFolderId }),
+            ...(selectedTagIds.length > 0 && { tagIds: selectedTagIds }),
+          };
+          getBookmarks(sortBy, filter).then(setBookmarks).catch((err) => {
+            console.error("[BookmarkListContent] 북마크 목록 조회 오류:", err);
+            setError(err instanceof Error ? err.message : "북마크 목록을 불러오는데 실패했습니다.");
+          });
+        }}
+      />
+
+      {/* 태그 목록 */}
+      <TagList
+        selectedTagIds={selectedTagIds}
+        onTagToggle={handleTagToggle}
+        onTagsChange={() => {
+          // 태그 변경 시 북마크 목록 다시 조회
+          const filter = {
+            ...(areaCode && { areaCode }),
+            ...(contentTypeId && { contentTypeId }),
+            ...(keyword && { keyword }),
+            ...(selectedFolderId !== null && { folderId: selectedFolderId }),
+            ...(selectedTagIds.length > 0 && { tagIds: selectedTagIds }),
           };
           getBookmarks(sortBy, filter).then(setBookmarks).catch((err) => {
             console.error("[BookmarkListContent] 북마크 목록 조회 오류:", err);
