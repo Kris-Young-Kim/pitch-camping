@@ -13,7 +13,7 @@
 
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
-import { measurePageLoad } from "@/lib/utils/performance";
+import { measurePageLoad, reportWebVital } from "@/lib/utils/performance";
 
 export function WebVitals() {
   const pathname = usePathname();
@@ -41,6 +41,9 @@ export function WebVitals() {
           const lcp = entry as PerformanceEntry & { renderTime?: number; loadTime?: number };
           const value = lcp.renderTime || lcp.loadTime || 0;
           console.log(`[Web Vitals] LCP: ${value.toFixed(2)}ms`, { pathname });
+          
+          // 데이터베이스에 저장
+          reportWebVital("lcp", value, pathname || "/");
           
           // 성능 임계값 체크 (LCP < 2.5초가 좋음)
           if (value > 2500) {
@@ -73,10 +76,14 @@ export function WebVitals() {
       // 브라우저가 지원하지 않는 경우 무시
     }
 
-    // 페이지 언로드 시 CLS 값 로깅
+    // 페이지 언로드 시 CLS 값 로깅 및 저장
     const handleUnload = () => {
       if (clsValue > 0) {
         console.log(`[Web Vitals] CLS: ${clsValue.toFixed(4)}`, { pathname });
+        
+        // 데이터베이스에 저장
+        reportWebVital("cls", clsValue, pathname || "/");
+        
         if (clsValue > 0.1) {
           console.warn(`[Web Vitals] CLS가 임계값을 초과했습니다: ${clsValue.toFixed(4)}`);
         }

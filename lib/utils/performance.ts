@@ -14,6 +14,7 @@
  */
 
 import { logPerformance } from "./logger";
+import { trackPerformanceMetric } from "./performance-tracker";
 
 /**
  * 성능 측정 추적기
@@ -90,6 +91,13 @@ export async function measureApiResponse<T>(
       success: true,
     });
 
+    // 데이터베이스에 성능 메트릭 저장 (비동기, 실패해도 무시)
+    trackPerformanceMetric("api_response", "api_response_time", duration, endpoint, {
+      success: true,
+    }).catch(() => {
+      // 실패해도 무시 (성능 측정이 메인 기능을 방해하지 않도록)
+    });
+
     return result;
   } catch (error) {
     const duration = performance.now() - startTime;
@@ -98,6 +106,14 @@ export async function measureApiResponse<T>(
       endpoint,
       success: false,
       error: error instanceof Error ? error.message : String(error),
+    });
+
+    // 데이터베이스에 성능 메트릭 저장 (비동기, 실패해도 무시)
+    trackPerformanceMetric("api_response", "api_response_time", duration, endpoint, {
+      success: false,
+      error: error instanceof Error ? error.message : String(error),
+    }).catch(() => {
+      // 실패해도 무시
     });
 
     throw error;
@@ -117,6 +133,11 @@ export function measurePageLoad(pageName: string): () => void {
     logPerformance(`페이지 로드 시간: ${pageName}`, duration, "ms", {
       pageName,
     });
+
+    // 데이터베이스에 성능 메트릭 저장 (비동기, 실패해도 무시)
+    trackPerformanceMetric("page_load", "page_load_time", duration, pageName).catch(() => {
+      // 실패해도 무시
+    });
   };
 }
 
@@ -134,6 +155,13 @@ export function reportWebVital(
   logPerformance(`Web Vital: ${metricName}`, value, "ms", {
     metricName,
     id,
+  });
+
+  // 데이터베이스에 Web Vital 저장 (비동기, 실패해도 무시)
+  trackPerformanceMetric("web_vital", metricName.toLowerCase(), value, undefined, {
+    id,
+  }).catch(() => {
+    // 실패해도 무시
   });
 
   // 프로덕션 환경에서는 분석 서비스로 전송 가능

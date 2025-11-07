@@ -427,12 +427,15 @@
     - [x] 지역별 인기 여행지 TOP 10 (RegionStats.popularTravels)
     - [x] 타입별 인기 여행지 TOP 10 (TypeStats.popularTravels)
     - [x] 상세 통계 UI 컴포넌트 (DetailedRegionTypeStats)
-  - [ ] 성능 모니터링
-    - API 응답 시간 모니터링 (평균, 중앙값, P95, P99)
-    - 페이지 로드 시간 모니터링 (LCP, FID, CLS)
-    - 데이터베이스 쿼리 성능 모니터링
-    - 에러율 모니터링 (API 에러, 페이지 에러)
-    - 성능 임계값 알림 (응답 시간 초과, 에러율 증가)
+  - [x] 성능 모니터링
+    - [x] API 응답 시간 모니터링 (평균, 중앙값, P95, P99) (getPerformanceMetrics)
+    - [x] 페이지 로드 시간 모니터링 (LCP, FID, CLS) (PerformanceMonitoring 컴포넌트)
+    - [x] 에러율 모니터링 (API 에러, 페이지 에러) (error_logs 테이블)
+    - [x] 성능 메트릭 데이터베이스 저장 (performance_metrics 테이블)
+    - [x] 성능 모니터링 UI 컴포넌트 (PerformanceMonitoring)
+    - [x] 성능 메트릭 수집 시스템 (performance-tracker.ts, API Routes)
+    - [ ] 데이터베이스 쿼리 성능 모니터링 (추후 구현)
+    - [ ] 성능 임계값 알림 (응답 시간 초과, 에러율 증가) (추후 구현)
   - [ ] 비용 분석
     - Vercel 사용량 추적 (함수 호출 수, 대역폭, 빌드 시간)
     - Supabase 사용량 추적 (데이터베이스 크기, API 호출 수, Storage 사용량)
