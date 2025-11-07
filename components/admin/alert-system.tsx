@@ -17,12 +17,10 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Bell, Plus, CheckCircle, XCircle, Clock, AlertTriangle } from "lucide-react";
-import {
-  createAlertRule,
-  getAlertRules,
-  checkAlerts,
-  getAlertHistory,
-} from "@/actions/admin-alerts/create-alert-rule";
+import { createAlertRule } from "@/actions/admin-alerts/create-alert-rule";
+import { getAlertRules } from "@/actions/admin-alerts/get-alert-rules";
+import { checkAlerts } from "@/actions/admin-alerts/check-alerts";
+import { getAlertHistory } from "@/actions/admin-alerts/get-alert-history";
 import { toast } from "sonner";
 import type { AlertRule } from "@/actions/admin-alerts/get-alert-rules";
 import type { AlertHistory } from "@/actions/admin-alerts/get-alert-history";

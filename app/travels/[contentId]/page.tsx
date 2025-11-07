@@ -36,6 +36,7 @@ import { SideNav } from "@/components/navigation/side-nav";
 import { trackView } from "@/lib/api/analytics";
 import { getTravelTypeName } from "@/lib/utils/travel";
 import { createClerkSupabaseClient } from "@/lib/supabase/server";
+import { getServiceRoleClient } from "@/lib/supabase/service-role";
 import { Home, Shield, MessageSquare } from "lucide-react";
 import type { TravelSiteDetail } from "@/types/travel";
 import type { Metadata } from "next";
@@ -52,11 +53,54 @@ export async function generateMetadata({
 
   try {
     console.log("[TravelDetailPage] 메타데이터 생성 시작:", contentId);
-    const response = await travelApi.getTravelDetail(contentId);
-    const items = normalizeTravelItems(
-      response.response?.body?.items?.item
-    ) as TravelSiteDetail[];
-    const detail = items[0];
+    let detail: TravelSiteDetail | null = null;
+
+    // 1. TourAPI 시도
+    try {
+      const response = await travelApi.getTravelDetail(contentId);
+      const items = normalizeTravelItems(
+        response.response?.body?.items?.item
+      ) as TravelSiteDetail[];
+      detail = items[0] || null;
+    } catch (tourApiError) {
+      console.warn("[TravelDetailPage] TourAPI 조회 실패, Supabase fallback 시도:", tourApiError);
+      
+      // 2. Supabase fallback
+      try {
+        const serviceClient = getServiceRoleClient();
+        const { data: travelData } = await serviceClient
+          .from("travels")
+          .select("*")
+          .eq("contentid", contentId)
+          .single();
+
+        if (travelData) {
+          // Supabase 데이터를 TravelSiteDetail 형식으로 변환
+          detail = {
+            contentid: travelData.contentid,
+            contenttypeid: travelData.contenttypeid,
+            title: travelData.title,
+            addr1: travelData.addr1,
+            addr2: travelData.addr2,
+            mapx: travelData.mapx,
+            mapy: travelData.mapy,
+            firstimage: travelData.firstimage,
+            firstimage2: travelData.firstimage2,
+            tel: travelData.tel,
+            homepage: travelData.homepage,
+            cat1: travelData.cat1,
+            cat2: travelData.cat2,
+            cat3: travelData.cat3,
+            areacode: travelData.areacode,
+            sigungucode: travelData.sigungucode,
+            zipcode: travelData.zipcode,
+            overview: travelData.overview,
+          } as TravelSiteDetail;
+        }
+      } catch (supabaseError) {
+        console.error("[TravelDetailPage] Supabase fallback 실패:", supabaseError);
+      }
+    }
 
     if (!detail) {
       return {
@@ -139,46 +183,93 @@ export default async function TravelDetailPage({
       // 반려동물 정보 조회 실패는 무시
     }
 
-    // 공통정보 조회
-    const commonResponse = await travelApi.getTravelDetail(contentId);
-    console.log("[TravelDetailPage] 공통정보 API 응답:", commonResponse);
+    // 공통정보 조회 (TourAPI 우선, 실패 시 Supabase fallback)
+    try {
+      const commonResponse = await travelApi.getTravelDetail(contentId);
+      console.log("[TravelDetailPage] 공통정보 API 응답:", commonResponse);
 
-    const commonItems = normalizeTravelItems(
-      commonResponse.response?.body?.items?.item
-    ) as TravelSiteDetail[];
+      const commonItems = normalizeTravelItems(
+        commonResponse.response?.body?.items?.item
+      ) as TravelSiteDetail[];
 
-    if (commonItems.length === 0) {
-      console.warn("[TravelDetailPage] 데이터 없음");
-      error = "여행지 정보를 찾을 수 없습니다.";
-    } else {
-      detail = commonItems[0];
-      console.log("[TravelDetailPage] 여행지 정보:", {
-        name: detail.title,
-        address: detail.addr1,
-        contentTypeId: detail.contenttypeid,
-      });
+      if (commonItems.length > 0) {
+        detail = commonItems[0];
+        console.log("[TravelDetailPage] 여행지 정보:", {
+          name: detail.title,
+          address: detail.addr1,
+          contentTypeId: detail.contenttypeid,
+        });
 
-      // 소개정보 조회 (contentTypeId가 있는 경우)
-      if (detail.contenttypeid) {
-        try {
-          const introResponse = await travelApi.getTravelDetailIntro(
-            contentId,
-            detail.contenttypeid
-          );
-          const introItems = normalizeTravelItems(
-            introResponse.response?.body?.items?.item
-          ) as TravelSiteDetail[];
+        // 소개정보 조회 (contentTypeId가 있는 경우)
+        if (detail.contenttypeid) {
+          try {
+            const introResponse = await travelApi.getTravelDetailIntro(
+              contentId,
+              detail.contenttypeid
+            );
+            const introItems = normalizeTravelItems(
+              introResponse.response?.body?.items?.item
+            ) as TravelSiteDetail[];
 
-          if (introItems.length > 0) {
-            introInfo = introItems[0];
-            // 소개정보를 detail에 병합
-            detail = { ...detail, ...introInfo };
-            console.log("[TravelDetailPage] 소개정보 병합 완료");
+            if (introItems.length > 0) {
+              introInfo = introItems[0];
+              // 소개정보를 detail에 병합
+              detail = { ...detail, ...introInfo };
+              console.log("[TravelDetailPage] 소개정보 병합 완료");
+            }
+          } catch (introErr) {
+            console.warn("[TravelDetailPage] 소개정보 조회 실패 (무시):", introErr);
+            // 소개정보 조회 실패는 무시하고 공통정보만 사용
           }
-        } catch (introErr) {
-          console.warn("[TravelDetailPage] 소개정보 조회 실패 (무시):", introErr);
-          // 소개정보 조회 실패는 무시하고 공통정보만 사용
         }
+      } else {
+        throw new Error("TourAPI 응답에 데이터가 없습니다.");
+      }
+    } catch (tourApiError) {
+      console.warn("[TravelDetailPage] TourAPI 조회 실패, Supabase fallback 시도:", tourApiError);
+      
+      // Supabase fallback
+      try {
+        const serviceClient = getServiceRoleClient();
+        const { data: travelData } = await serviceClient
+          .from("travels")
+          .select("*")
+          .eq("contentid", contentId)
+          .single();
+
+        if (travelData) {
+          // Supabase 데이터를 TravelSiteDetail 형식으로 변환
+          detail = {
+            contentid: travelData.contentid,
+            contenttypeid: travelData.contenttypeid,
+            title: travelData.title,
+            addr1: travelData.addr1,
+            addr2: travelData.addr2,
+            mapx: travelData.mapx,
+            mapy: travelData.mapy,
+            firstimage: travelData.firstimage,
+            firstimage2: travelData.firstimage2,
+            tel: travelData.tel,
+            homepage: travelData.homepage,
+            cat1: travelData.cat1,
+            cat2: travelData.cat2,
+            cat3: travelData.cat3,
+            areacode: travelData.areacode,
+            sigungucode: travelData.sigungucode,
+            zipcode: travelData.zipcode,
+            overview: travelData.overview,
+          } as TravelSiteDetail;
+          
+          console.log("[TravelDetailPage] Supabase fallback 성공:", {
+            name: detail.title,
+            address: detail.addr1,
+          });
+        } else {
+          error = "여행지 정보를 찾을 수 없습니다.";
+        }
+      } catch (supabaseError) {
+        console.error("[TravelDetailPage] Supabase fallback 실패:", supabaseError);
+        error = "여행지 정보를 불러오는데 실패했습니다.";
       }
     }
   } catch (err) {

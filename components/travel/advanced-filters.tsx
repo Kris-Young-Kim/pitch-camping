@@ -30,7 +30,9 @@ import { Switch } from "@/components/ui/switch";
 import { Save, Trash2, Calendar, Filter } from "lucide-react";
 import { toast } from "sonner";
 import type { TravelFilter } from "@/types/travel";
-import { getFilterPresets, createFilterPreset, deleteFilterPreset } from "@/actions/filters/get-filter-presets";
+import { getFilterPresets } from "@/actions/filters/get-filter-presets";
+import { createFilterPreset } from "@/actions/filters/create-filter-preset";
+import { deleteFilterPreset } from "@/actions/filters/delete-filter-preset";
 import type { FilterPreset } from "@/actions/filters/get-filter-presets";
 
 interface AdvancedFiltersProps {

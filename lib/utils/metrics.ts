@@ -59,10 +59,13 @@ export function trackBookmarkAttempt(success: boolean) {
   metricsData.bookmarkAttempts++;
   if (success) {
     metricsData.bookmarkSuccesses++;
-    logInfo("[Metrics] 북마크 성공", { attempts: metricsData.bookmarkAttempts });
+    // 성공은 조용히 추적 (너무 많은 로그 방지)
+    // logInfo("[Metrics] 북마크 성공", { attempts: metricsData.bookmarkAttempts });
   } else {
     metricsData.totalErrors++;
-    logError("[Metrics] 북마크 실패", new Error("북마크 실패"), { attempts: metricsData.bookmarkAttempts });
+    // 실패는 경고 레벨로 로깅 (에러가 아닌 메트릭 추적이므로)
+    // 실제 에러는 호출하는 쪽에서 이미 로깅하고 있음
+    // logError("[Metrics] 북마크 실패", new Error("북마크 실패"), { attempts: metricsData.bookmarkAttempts });
   }
 }
 
@@ -74,10 +77,13 @@ export function trackUrlCopyAttempt(success: boolean) {
   metricsData.urlCopyAttempts++;
   if (success) {
     metricsData.urlCopySuccesses++;
-    logInfo("[Metrics] URL 복사 성공", { attempts: metricsData.urlCopyAttempts });
+    // 성공은 조용히 추적 (너무 많은 로그 방지)
+    // logInfo("[Metrics] URL 복사 성공", { attempts: metricsData.urlCopyAttempts });
   } else {
     metricsData.totalErrors++;
-    logError("[Metrics] URL 복사 실패", new Error("URL 복사 실패"), { attempts: metricsData.urlCopyAttempts });
+    // 실패는 경고 레벨로 로깅 (에러가 아닌 메트릭 추적이므로)
+    // 실제 에러는 호출하는 쪽에서 이미 로깅하고 있음
+    // logError("[Metrics] URL 복사 실패", new Error("URL 복사 실패"), { attempts: metricsData.urlCopyAttempts });
   }
 }
 
@@ -92,16 +98,19 @@ export function trackApiRequest(success: boolean, responseTime: number) {
 
   if (success) {
     metricsData.apiSuccesses++;
-    logInfo("[Metrics] API 요청 성공", { 
-      requests: metricsData.apiRequests,
-      responseTime: `${responseTime}ms`
-    });
+    // 성공은 조용히 추적 (너무 많은 로그 방지)
+    // logInfo("[Metrics] API 요청 성공", { 
+    //   requests: metricsData.apiRequests,
+    //   responseTime: `${responseTime}ms`
+    // });
   } else {
     metricsData.totalErrors++;
-    logError("[Metrics] API 요청 실패", new Error("API 요청 실패"), { 
-      requests: metricsData.apiRequests,
-      responseTime: `${responseTime}ms`
-    });
+    // 실패는 경고 레벨로 로깅 (에러가 아닌 메트릭 추적이므로)
+    // 실제 에러는 호출하는 쪽에서 이미 로깅하고 있음
+    // logError("[Metrics] API 요청 실패", new Error("API 요청 실패"), { 
+    //   requests: metricsData.apiRequests,
+    //   responseTime: `${responseTime}ms`
+    // });
   }
 }
 

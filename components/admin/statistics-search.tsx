@@ -19,7 +19,9 @@ import {
 } from "@/components/ui/select";
 import { Search, Filter } from "lucide-react";
 import { toast } from "sonner";
-import { getFilterPresets, createFilterPreset, deleteFilterPreset } from "@/actions/filters/get-filter-presets";
+import { getFilterPresets } from "@/actions/filters/get-filter-presets";
+import { createFilterPreset } from "@/actions/filters/create-filter-preset";
+import { deleteFilterPreset } from "@/actions/filters/delete-filter-preset";
 import type { FilterPreset } from "@/actions/filters/get-filter-presets";
 
 interface StatisticsSearchProps {

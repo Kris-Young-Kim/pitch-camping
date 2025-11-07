@@ -15,6 +15,7 @@
 
 import { logPerformance } from "./logger";
 import { trackPerformanceMetric } from "./performance-tracker";
+import { trackPerformanceMetricServer } from "./performance-tracker-server";
 
 /**
  * 성능 측정 추적기
@@ -92,11 +93,22 @@ export async function measureApiResponse<T>(
     });
 
     // 데이터베이스에 성능 메트릭 저장 (비동기, 실패해도 무시)
-    trackPerformanceMetric("api_response", "api_response_time", duration, endpoint, {
-      success: true,
-    }).catch(() => {
-      // 실패해도 무시 (성능 측정이 메인 기능을 방해하지 않도록)
-    });
+    // 서버 사이드에서는 서버 함수 사용, 클라이언트 사이드에서는 클라이언트 함수 사용
+    if (typeof window === "undefined") {
+      // 서버 사이드
+      trackPerformanceMetricServer("api_response", "api_response_time", duration, endpoint, {
+        success: true,
+      }).catch(() => {
+        // 실패해도 무시 (성능 측정이 메인 기능을 방해하지 않도록)
+      });
+    } else {
+      // 클라이언트 사이드
+      trackPerformanceMetric("api_response", "api_response_time", duration, endpoint, {
+        success: true,
+      }).catch(() => {
+        // 실패해도 무시 (성능 측정이 메인 기능을 방해하지 않도록)
+      });
+    }
 
     return result;
   } catch (error) {
@@ -109,12 +121,24 @@ export async function measureApiResponse<T>(
     });
 
     // 데이터베이스에 성능 메트릭 저장 (비동기, 실패해도 무시)
-    trackPerformanceMetric("api_response", "api_response_time", duration, endpoint, {
-      success: false,
-      error: error instanceof Error ? error.message : String(error),
-    }).catch(() => {
-      // 실패해도 무시
-    });
+    // 서버 사이드에서는 서버 함수 사용, 클라이언트 사이드에서는 클라이언트 함수 사용
+    if (typeof window === "undefined") {
+      // 서버 사이드
+      trackPerformanceMetricServer("api_response", "api_response_time", duration, endpoint, {
+        success: false,
+        error: error instanceof Error ? error.message : String(error),
+      }).catch(() => {
+        // 실패해도 무시
+      });
+    } else {
+      // 클라이언트 사이드
+      trackPerformanceMetric("api_response", "api_response_time", duration, endpoint, {
+        success: false,
+        error: error instanceof Error ? error.message : String(error),
+      }).catch(() => {
+        // 실패해도 무시
+      });
+    }
 
     throw error;
   }
@@ -135,9 +159,12 @@ export function measurePageLoad(pageName: string): () => void {
     });
 
     // 데이터베이스에 성능 메트릭 저장 (비동기, 실패해도 무시)
-    trackPerformanceMetric("page_load", "page_load_time", duration, pageName).catch(() => {
-      // 실패해도 무시
-    });
+    // measurePageLoad는 클라이언트 사이드에서만 사용되므로 trackPerformanceMetric 사용
+    if (typeof window !== "undefined") {
+      trackPerformanceMetric("page_load", "page_load_time", duration, pageName).catch(() => {
+        // 실패해도 무시
+      });
+    }
   };
 }
 
@@ -158,11 +185,14 @@ export function reportWebVital(
   });
 
   // 데이터베이스에 Web Vital 저장 (비동기, 실패해도 무시)
-  trackPerformanceMetric("web_vital", metricName.toLowerCase(), value, undefined, {
-    id,
-  }).catch(() => {
-    // 실패해도 무시
-  });
+  // reportWebVital는 클라이언트 사이드에서만 사용되므로 trackPerformanceMetric 사용
+  if (typeof window !== "undefined") {
+    trackPerformanceMetric("web_vital", metricName.toLowerCase(), value, undefined, {
+      id,
+    }).catch(() => {
+      // 실패해도 무시
+    });
+  }
 
   // 프로덕션 환경에서는 분석 서비스로 전송 가능
   if (process.env.NODE_ENV === "production") {

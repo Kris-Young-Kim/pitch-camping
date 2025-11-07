@@ -12,7 +12,8 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Download, Database, FileText } from "lucide-react";
-import { exportStatistics, exportBackup } from "@/actions/admin-stats/export-statistics";
+import { exportStatistics } from "@/actions/admin-stats/export-statistics";
+import { exportBackup } from "@/actions/admin-stats/export-backup";
 import { toast } from "sonner";
 import type { ExportFormat } from "@/actions/admin-stats/export-statistics";
 
