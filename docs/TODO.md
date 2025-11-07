@@ -419,12 +419,14 @@
     - [x] 사용자 리텐션 분석 (재방문율, 일별 리텐션 - 최근 7일)
     - [x] 사용자 전환율 분석 (방문 → 북마크, 방문 → 리뷰)
     - [x] 사용자 행동 분석 UI 컴포넌트 (UserBehaviorAnalytics)
-  - [ ] 지역별/타입별 상세 통계
-    - 지역별 상세 통계 (시/도별, 시군구별)
-    - 여행지 타입별 상세 통계 (관광지, 문화시설, 축제, 숙박 등)
-    - 지역-타입 조합 통계
-    - 지역별 인기 여행지 TOP 10
-    - 타입별 인기 여행지 TOP 10
+  - [x] 지역별/타입별 상세 통계
+    - [x] 지역별 상세 통계 (시/도별) (getRegionTypeStats)
+    - [x] 시군구별 상세 통계 (getDetailedRegionTypeStats)
+    - [x] 여행지 타입별 상세 통계 (관광지, 문화시설, 축제, 숙박 등)
+    - [x] 지역-타입 조합 통계 (getDetailedRegionTypeStats)
+    - [x] 지역별 인기 여행지 TOP 10 (RegionStats.popularTravels)
+    - [x] 타입별 인기 여행지 TOP 10 (TypeStats.popularTravels)
+    - [x] 상세 통계 UI 컴포넌트 (DetailedRegionTypeStats)
   - [ ] 성능 모니터링
     - API 응답 시간 모니터링 (평균, 중앙값, P95, P99)
     - 페이지 로드 시간 모니터링 (LCP, FID, CLS)

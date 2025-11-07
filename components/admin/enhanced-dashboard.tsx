@@ -16,6 +16,7 @@ import { TimeSeriesChart } from "@/components/admin/time-series-chart";
 import { RegionTypeBarChart } from "@/components/admin/region-type-bar-chart";
 import { PieChartComponent } from "@/components/admin/pie-chart";
 import { UserBehaviorAnalytics } from "@/components/admin/user-behavior-analytics";
+import { DetailedRegionTypeStats } from "@/components/admin/detailed-region-type-stats";
 import { getTimeSeriesStats, type TimePeriod } from "@/actions/admin-stats/get-time-series-stats";
 import { getRegionTypeStats } from "@/actions/admin-stats/get-region-type-stats";
 import { toast } from "sonner";
@@ -207,6 +208,9 @@ export function EnhancedDashboard() {
 
       {/* 사용자 행동 분석 */}
       <UserBehaviorAnalytics />
+
+      {/* 지역별/타입별 상세 통계 */}
+      <DetailedRegionTypeStats />
     </div>
   );
 }
