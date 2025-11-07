@@ -33,6 +33,8 @@ export interface BookmarkWithTravel extends TravelSite {
     name: string;
     color: string | null;
   }>;
+  note?: string | null;
+  noteUpdatedAt?: string | null;
 }
 
 /**
@@ -84,7 +86,7 @@ export async function getBookmarks(
     // 북마크 목록 조회
     let bookmarksQuery = supabase
       .from("bookmarks")
-      .select("id, content_id, created_at, folder_id")
+      .select("id, content_id, created_at, folder_id, note, note_updated_at")
       .eq("user_id", userData.id);
 
     // 폴더 필터 적용
@@ -223,6 +225,8 @@ export async function getBookmarks(
           bookmarkId: bookmark.id,
           bookmarkedAt: bookmark.created_at,
           tags: tagsByBookmark.get(bookmark.id) || [],
+          note: bookmark.note || null,
+          noteUpdatedAt: bookmark.note_updated_at || null,
         };
       })
       .filter((item): item is BookmarkWithTravel => item !== null);
@@ -246,7 +250,8 @@ export async function getBookmarks(
           (b) =>
             b.title?.toLowerCase().includes(keyword) ||
             b.addr1?.toLowerCase().includes(keyword) ||
-            b.addr2?.toLowerCase().includes(keyword)
+            b.addr2?.toLowerCase().includes(keyword) ||
+            b.note?.toLowerCase().includes(keyword)
         );
       }
       if (filter.tagIds && filter.tagIds.length > 0) {

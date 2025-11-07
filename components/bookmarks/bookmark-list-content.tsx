@@ -21,6 +21,7 @@
 import { useState, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { TravelCard } from "@/components/travel-card";
+import { BookmarkCard } from "@/components/bookmarks/bookmark-card";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -309,7 +310,7 @@ export function BookmarkListContent() {
                 type="text"
                 value={keyword}
                 onChange={(e) => setKeyword(e.target.value)}
-                placeholder="여행지명, 주소 검색..."
+                placeholder="여행지명, 주소, 메모 검색..."
                 className="h-11 w-full pl-10"
               />
             </div>
@@ -343,13 +344,28 @@ export function BookmarkListContent() {
       ) : (
         <>
           <div className="flex items-center justify-between mb-4">
-            <p className="text-sm text-gray-600 dark:text-gray-400">
-              총 {bookmarks.length}개의 북마크
-            </p>
+            <div className="flex items-center gap-4">
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                총 {bookmarks.length}개의 북마크
+              </p>
+              {bookmarks.some((b) => b.note) && (
+                <p className="text-xs text-gray-500 dark:text-gray-500">
+                  메모가 있는 북마크: {bookmarks.filter((b) => b.note).length}개
+                </p>
+              )}
+            </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {bookmarks.map((bookmark) => (
-              <TravelCard key={bookmark.bookmarkId} travel={bookmark} />
+              <BookmarkCard
+                key={bookmark.bookmarkId}
+                bookmark={bookmark}
+                onUpdate={() => {
+                  // 북마크 목록 새로고침
+                  const params = new URLSearchParams(searchParams.toString());
+                  router.push(`/bookmarks?${params.toString()}`);
+                }}
+              />
             ))}
           </div>
         </>
