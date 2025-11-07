@@ -20,6 +20,7 @@ import { DetailedRegionTypeStats } from "@/components/admin/detailed-region-type
 import { PerformanceMonitoring } from "@/components/admin/performance-monitoring";
 import { CostAnalysis } from "@/components/admin/cost-analysis";
 import { Predictions } from "@/components/admin/predictions";
+import { ReportGenerator } from "@/components/admin/report-generator";
 import { getTimeSeriesStats, type TimePeriod } from "@/actions/admin-stats/get-time-series-stats";
 import { getRegionTypeStats } from "@/actions/admin-stats/get-region-type-stats";
 import { toast } from "sonner";
@@ -223,6 +224,9 @@ export function EnhancedDashboard() {
 
       {/* 예측 분석 */}
       <Predictions />
+
+      {/* 리포트 생성 */}
+      <ReportGenerator />
     </div>
   );
 }
