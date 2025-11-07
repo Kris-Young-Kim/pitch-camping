@@ -11,7 +11,7 @@
 !.yarn/versions
 
 # pnpm
-pnpm-lock.yaml
+# pnpm-lock.yaml (커밋 필요)
 
 # testing
 /coverage
