@@ -41,6 +41,7 @@ Phase 2는 Pitch Travel 서비스의 핵심 기능인 여행지 목록, 지도 �
 - shadcn/ui Select 컴포넌트 사용
 - URL 쿼리 파라미터 연동
 - 필터 변경 시 상위 컴포넌트에 콜백 전달
+- 가로 배치 레이아웃 (데스크톱: 가로, 모바일: 세로)
 
 #### 2.1.2 여행지 카드 컴포넌트 ✅
 
@@ -73,9 +74,9 @@ Phase 2는 Pitch Travel 서비스의 핵심 기능인 여행지 목록, 지도 �
 - 페이지네이션
 
 **API 연동**:
-- `/api/travels` API Route를 통한 TourAPI 호출
-- `travelApi.getTravelList(filter)` 또는 `travelApi.searchTravel(keyword, filter)`
-- 응답 데이터 정규화 (`normalizeTravelItems`)
+- `/api/travels` API Route를 통한 Supabase 조회
+- Supabase `travels` 테이블에서 필터링, 검색, 정렬, 페이지네이션
+- TourAPI 응답 형식과 호환되도록 데이터 변환
 - 총 개수 표시
 
 #### 2.1.4 홈페이지 통합 ✅
@@ -83,10 +84,10 @@ Phase 2는 Pitch Travel 서비스의 핵심 기능인 여행지 목록, 지도 �
 **파일**: `app/page.tsx`
 
 **레이아웃**:
-- 필터 사이드바 (좌측)
-- 여행지 목록 (중앙)
-- 지도 (우측, 데스크톱)
-- 모바일: 탭으로 전환
+- 필터 (상단, 가로 배치)
+- 여행지 목록 (중앙 상단)
+- 지도 (중앙 하단)
+- 모든 화면 크기에서 세로 배치 유지
 
 **상태 관리**:
 - URL 쿼리 파라미터 기반 필터 상태
@@ -124,8 +125,8 @@ Phase 2는 Pitch Travel 서비스의 핵심 기능인 여행지 목록, 지도 �
 - 선택된 여행지 강조
 
 **반응형**:
-- 데스크톱: 좌우 분할 레이아웃
-- 모바일: 탭 전환 (목록/지도)
+- 모든 화면 크기: 세로 배치 (목록 위, 지도 아래)
+- 지도 높이: 모바일 600px, 데스크톱 800px
 
 ### 2.3 키워드 검색 기능 ✅ 완료
 
@@ -153,8 +154,8 @@ Phase 2는 Pitch Travel 서비스의 핵심 기능인 여행지 목록, 지도 �
 - URL 쿼리 파라미터에 검색어 포함
 
 **API 연동**:
-- `/api/travels?keyword=...` API Route를 통한 TourAPI 호출
-- `travelApi.searchTravel(keyword, filter)` 메서드 사용
+- `/api/travels?keyword=...` API Route를 통한 Supabase 조회
+- Supabase `travels` 테이블에서 키워드 검색 (제목, 개요)
 
 ### 2.4 상세페이지 ✅ 완료
 

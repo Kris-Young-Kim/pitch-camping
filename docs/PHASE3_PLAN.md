@@ -9,6 +9,7 @@ Phase 3은 MVP 기능 완성 후 프로덕션 배포 및 운영을 위한 인프
 ### 이미 완료된 작업
 
 - ✅ RLS 보안 정책 설계 및 문서화
+- ✅ 여행지 테이블 생성 (travels) - Phase 1에서 완료
 - ✅ 통계 테이블 생성 (travel_stats, user_activity)
 - ✅ 조회수 추적 시스템 (analytics.ts)
 - ✅ 인기도/랭킹 계산 시스템 (ranking.ts)

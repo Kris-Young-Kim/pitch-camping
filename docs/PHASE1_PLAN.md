@@ -102,7 +102,7 @@ Phase 1은 Pitch Travel 서비스의 기반 인프라와 공통 모듈을 구축
 
 ### 7. Supabase 데이터베이스 스키마
 
-**파일**: `supabase/migrations/tourapi_schema.sql`
+**파일**: `supabase/migrations/tourapi_schema.sql`, `supabase/migrations/20250107000000_create_travels_table.sql`
 
 **users 테이블**:
 
@@ -120,6 +120,18 @@ Phase 1은 Pitch Travel 서비스의 기반 인프라와 공통 모듈을 구축
 - created_at (TIMESTAMPTZ)
 - UNIQUE(user_id, content_id)
 - 인덱스: user_id, content_id, created_at
+- RLS 비활성화 (개발 환경)
+
+**travels 테이블** (2025-01-07 추가):
+
+- contentid (TEXT, PK) - TourAPI의 contentid
+- contenttypeid (TEXT, NOT NULL) - 콘텐츠 타입ID
+- title (TEXT, NOT NULL) - 여행지명
+- addr1, addr2, mapx, mapy, firstimage, tel, homepage 등 TourAPI 필드
+- areacode, sigungucode - 지역 코드
+- overview - 개요
+- created_at, updated_at - 타임스탬프
+- 인덱스: contenttypeid, areacode, title, created_at
 - RLS 비활성화 (개발 환경)
 
 ### 8. 메타데이터 설정
@@ -146,6 +158,8 @@ Phase 1은 Pitch Travel 서비스의 기반 인프라와 공통 모듈을 구축
 - [x] 모든 타입 정의 완료
 - [x] API 클라이언트가 정상 동작
 - [x] 데이터베이스 마이그레이션 완료
+  - [x] travels 테이블 생성 완료
+  - [x] 샘플 여행지 데이터 추가 완료
 - [x] 환경변수 설정 확인
 - [x] 기본 메타데이터 설정 완료
 

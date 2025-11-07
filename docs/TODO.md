@@ -15,6 +15,11 @@
 - [x] 환경변수 관리: .env, 보안 적합성 확인
 - [x] 공공 API 인증키 적용, API 모듈 구조 설계 (lib/api/travel-api.ts) - 한국관광공사 TourAPI 연동 완료
 - [x] Supabase DB 구조 설계 (bookmarks·user·review 등 확장성 반영)
+- [x] Supabase 여행지 테이블 생성 (`supabase/migrations/20250107000000_create_travels_table.sql`)
+  - TourAPI 데이터 구조 기반 테이블 설계
+  - 인덱스 및 권한 설정
+- [x] 샘플 여행지 데이터 추가 (`supabase/migrations/20250107000001_insert_sample_travels.sql`)
+  - 한국 인기 여행지 15개 추가 (경복궁, 남산타워, 해운대, 감천문화마을 등)
 - [x] Clerk 연동, 유저 인증 플로우 기본 구현
 - [ ] UI디자인 초안: 직원 및 투자자 대상 피드백 회의
 - [ ] 오너/팀원의 사업 아이디어 피칭 & 최종 비전 검토
@@ -81,16 +86,22 @@
 - [x] 필터 컴포넌트 (`components/travel-filters.tsx`)
   - 지역, 여행지 타입(관광지/문화시설/축제/숙박), 카테고리 필터 및 정렬 옵션 구현
   - URL 쿼리 파라미터 연동
+  - 가로 배치 레이아웃 (데스크톱: 가로, 모바일: 세로)
 - [x] 여행지 카드 컴포넌트 (`components/travel-card.tsx`)
   - 썸네일 이미지, 여행지명, 주소, 타입 뱃지, 카테고리 아이콘 표시
   - 반응형 디자인, 클릭 시 상세페이지 이동
 - [x] 여행지 목록 컴포넌트 (`components/travel-list.tsx`)
-  - 그리드 레이아웃 (반응형), TourAPI 연동
+  - 그리드 레이아웃 (반응형), Supabase 연동
   - 로딩 상태 (Skeleton UI), 에러 처리, 빈 결과 처리
   - 페이지네이션 구현
+- [x] API 라우트 Supabase 조회로 변경 (`app/api/travels/route.ts`)
+  - TourAPI 대신 Supabase `travels` 테이블에서 조회
+  - 필터링, 검색, 정렬, 페이지네이션 지원
+  - TourAPI 응답 형식과 호환되도록 데이터 변환
 - [x] 홈페이지 통합 (`app/page.tsx`)
   - 필터와 목록 컴포넌트 통합
   - URL 쿼리 파라미터 기반 필터 상태 관리
+  - 레이아웃: 필터 상단, 목록과 지도 세로 배치 (목록 위, 지도 아래)
 - [x] 검색 컴포넌트 (`components/travel-search.tsx`)
   - 검색창, 엔터 키 또는 버튼으로 검색 실행
   - 검색어 초기화 기능
@@ -105,7 +116,7 @@
   - 좌표 변환 (필요 시)
   - 여행지 마커 표시 및 인포윈도우
   - 리스트-지도 상호연동 (카드 클릭 시 지도 이동)
-  - 반응형 레이아웃 (데스크톱: 분할, 모바일: 탭 전환)
+  - 반응형 레이아웃 (세로 배치: 목록 위, 지도 아래)
 - [x] 이미지 갤러리 (`components/travel-detail/detail-gallery.tsx`)
   - 대표 이미지 및 서브 이미지 썸네일 표시
   - 이미지 클릭 시 전체화면 모달
@@ -522,6 +533,10 @@
   - 홈페이지 Hero 섹션 추가 (`app/page.tsx`)
     - 그라데이션 배경, 대형 제목, 현대적인 검색창
     - Design.md 원칙 반영 (모바일 퍼스트, 미니멀리즘, 비주얼 중심)
+  - 레이아웃 개선 (2025-01-07)
+    - 필터를 상단 가로 배치로 변경
+    - 목록과 지도를 세로 배치로 변경 (목록 위, 지도 아래)
+    - 모든 화면 크기에서 일관된 레이아웃 유지
   - 여행지 카드 디자인 개선 (`components/travel-card.tsx`)
     - 16:9 이미지 비율, 호버 시 줌 효과
     - 여행지 타입 뱃지 스타일 개선 (컬러 아이콘, rounded-full)
@@ -529,6 +544,7 @@
   - 필터 컴포넌트 디자인 개선 (`components/travel-filters.tsx`)
     - 아이콘 배경, 더 큰 입력 필드 (h-11)
     - 활성 필터 뱃지 스타일 개선 (블루 테마)
+    - 가로 배치 레이아웃 (데스크톱: 가로, 모바일: 세로)
   - 상세페이지 디자인 개선 (`app/travels/[contentId]/page.tsx`)
     - 2/3 + 1/3 그리드 레이아웃
     - 예약/문의 버튼 sticky 위치
@@ -572,10 +588,10 @@
 
 **작업 내용**:
 
-- [x] CORS 문제 해결 (`app/api/travels/route.ts`)
-  - Next.js API Route를 통한 프록시 구현
-  - 서버 사이드에서 API 키 관리
-  - 클라이언트에서 직접 호출 가능
+- [x] API 라우트 Supabase 조회로 변경 (`app/api/travels/route.ts`)
+  - TourAPI 대신 Supabase `travels` 테이블에서 조회
+  - 필터링, 검색, 정렬, 페이지네이션 지원
+  - TourAPI 응답 형식과 호환되도록 데이터 변환
   - CORS 헤더 추가 (Access-Control-Allow-Origin, Access-Control-Allow-Methods)
   - OPTIONS 요청 처리 (preflight)
   - 캐싱 전략 적용 (5분 캐시, 10분 stale-while-revalidate)
